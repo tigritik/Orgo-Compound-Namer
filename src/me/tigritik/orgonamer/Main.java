@@ -13,13 +13,19 @@ import java.util.StringTokenizer;
 public class Main {
 
   private static int N; // number of nodes
-  private static List<List<Integer>> adjList;
-  private static int parentChainLength  = 0;
+  private static List<List<Integer>> adjList; // the edges between nodes
+  private static int parentChainLength  = 0; // length of parent chain
 
   public static void main(String[] args) throws IOException {
+
+    //reads in inputs and fills out (adjList)
     fillAdjacencyList();
-    findLongestChain();
-    System.out.println(parentChainLength);
+    
+    //finds longest path in graph (stored in (parentChainLength))
+    // (possibleParentChains) stores all the paths w length parentChainLength, stored as (start node, end node)
+    ArrayList<List<Integer>> possibleParentChains = findLongestChain();
+
+    
   }
 
   public static void fillAdjacencyList() throws IOException {
@@ -48,36 +54,53 @@ public class Main {
     return new BufferedReader(new FileReader(fileName));
   }
 
+  // not sure if the best way to store the paths (given by start and end carbon, so its an arraylist of pairs)
+  // is ArrayList<List<Integer>>
   public static ArrayList<List<Integer>> findLongestChain() {
+
+    /*
+    Idea is as follows:
+    (1) find a leaf and run a bfs from it, noting the nodes furthest away from it, stored in (furthestNodes)
+    (2) from all nodes in (furthestNodes), run another bfs, noting nodes furthest away from it
+    (3) the paths with max length are possible parent chains
+    */
+
+    // finds leaf for (1)
     int firstLeaf = findFirstLeaf();
+
     // first bfs to find correct ending nodes
     int[] dist = bfs(firstLeaf);
 
     int maxLength = 0;
-    // f
     ArrayList<Integer> furthestNodes = new ArrayList<>();
 
     for (int i = 0; i < dist.length; i++){
-      if (dist[i] > maxLength){
+      if (dist[i] + 1 > maxLength){
         furthestNodes.clear();
-        maxLength = dist[i];
+        maxLength = dist[i] + 1;
         furthestNodes.add(i);
       }
 
-      else if (dist[i] == maxLength){
+      else if (dist[i] + 1 == maxLength){
         furthestNodes.add(i);
       }
     }
     
     // stores all possible start and end nodes 
     ArrayList<List<Integer>> pairs = new ArrayList<>();
-    
+
+
+    // runs a bfs from all ending nodes 
     for (int start : furthestNodes){
       dist = bfs(start);
       for (int i = 0; i < dist.length; i++){
-        if (dist[i] > parentChainLength){
+        if (dist[i] + 1 > parentChainLength){
           pairs.clear();
-          parentChainLength = dist[i];
+          parentChainLength = dist[i] + 1;
+          List<Integer> L = Arrays.asList(start, i);
+          pairs.add(L);
+        }
+        else if (dist[i] + 1 == parentChainLength){
           List<Integer> L = Arrays.asList(start, i);
           pairs.add(L);
         }
@@ -86,11 +109,9 @@ public class Main {
 
     return pairs;
 
-
-
-
   }
 
+  // breadth first search from (start) node
   public static int[] bfs(int start){
     int[] dist = new int[N+1];
     Queue<Integer> q = new LinkedList<>();

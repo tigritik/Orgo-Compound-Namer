@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class FunctionalNode extends Node {
+public class FunctionalNode extends Node {
     private Node n1;
     private Node n2;
     private Node n3;
@@ -25,7 +25,7 @@ class FunctionalNode extends Node {
         return new ArrayList<>(s);
     }
 
-    FunctionalNode(String name, String iupacName) {
+    public FunctionalNode(String name, String iupacName) {
         this.name = name;
         this.iupacName = iupacName;
         weight = 0;
