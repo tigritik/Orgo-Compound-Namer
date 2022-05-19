@@ -5,12 +5,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class CarbonNode extends Node {
+public class CarbonNode extends FunctionalNode {
 
     private Node n1;
     private Node n2;
     private Node n3;
     private Node n4;
+
+    private String baseName;
+
+    private static final String[] rootPrefix = { "", "meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non",
+      "dec", "undec", "dodec" };
 
     public List<Node> getConnections() {
         Set<Node> s = new HashSet<>(4);
@@ -20,4 +25,25 @@ public class CarbonNode extends Node {
         s.add(n4);
         return new ArrayList<>(s);
     }
+
+    CarbonNode(int numCarbons) {
+        
+        super(rootPrefix[numCarbons]);
+        setBaseName(numCarbons,false);
+        
+    }
+
+    
+
+    public void setBaseName(int chainLength, boolean inParentChain) {
+    // i.e. methyl, methane, propane, propyl, etc
+    if (inParentChain) {
+      this.baseName = rootPrefix[chainLength] + "ane";
+    } else {
+      this.baseName = rootPrefix[chainLength] + "yl";
+    }
+
+  }
+
+    
 }
