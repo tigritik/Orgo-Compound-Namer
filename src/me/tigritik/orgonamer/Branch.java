@@ -1,5 +1,8 @@
 package me.tigritik.orgonamer;
 
+import me.tigritik.orgonamer.nodes.FunctionalNode;
+import me.tigritik.orgonamer.nodes.Node;
+
 class Branch {
   private static final String[] rootPrefix = { "", "meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non",
       "dec", "undec", "dodec" };
@@ -17,7 +20,7 @@ class Branch {
   }
 
   Branch(String functionalGroup) {
-    iupacName=returnFunctionalGroupName(functionalGroup);
+    iupacName = returnFunctionalGroupName(functionalGroup);
   }
 
   public String returnBaseName(int chainLength, boolean inParentChain) {
@@ -46,7 +49,9 @@ class Branch {
 
       case "I":
         return new FunctionalNode(functionalGroup, "iodo");
-
+      // i added smth to get rid of error idk waht u want to set it as
+      default:
+        return new FunctionalNode(functionalGroup, "other");
     }
   }
 }
