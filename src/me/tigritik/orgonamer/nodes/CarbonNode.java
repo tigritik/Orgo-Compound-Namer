@@ -26,12 +26,14 @@ public class CarbonNode extends FunctionalNode {
         return new ArrayList<>(s);
     }
 
-    CarbonNode(int numCarbons) {
+    public CarbonNode(int numCarbons) {
         
         super(rootPrefix[numCarbons]);
         setBaseName(numCarbons,false);
         
     }
+
+
 
     
 

@@ -1,7 +1,6 @@
 package me.tigritik.orgonamer.chain;
 
 import me.tigritik.orgonamer.Util;
-import me.tigritik.orgonamer.nodes.CarbonNode;
 
 import java.util.Collection;
 
@@ -33,8 +32,12 @@ public class Chain {
       return length;
     }
 
-    public int[] getNode(){
+    public int[] getNodes(){
       return nodes; 
+    }
+
+    public boolean branchAt(int index) {
+        return (nodes[index].getConnections().size() >= 3);
     }
 
     public String toString(){

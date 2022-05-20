@@ -29,13 +29,20 @@ public class Main {
     ArrayList<Chain> possibleParentChains = findLongestChain();
 
     for (Chain c : possibleParentChains){
-      for (int n : c.getNode()){
+      for (int n : c.getNodes()){
         System.out.print(n + " ");
       }
       System.out.println();
     }
 
     for (Chain c : possibleParentChains) {
+      int i = 0;
+      for (int node : c.getNodes()) {
+        if (node.branchAt(i)) {
+          System.out.print(i + "-");
+        }
+        i++;
+      }
       System.out.println(c);
     }
 
