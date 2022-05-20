@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-import me.tigritik.orgonamer.Chain.Chain;
+import me.tigritik.orgonamer.chain.Chain;
 import me.tigritik.orgonamer.nodes.FunctionalNode;
 
 public class Main {
@@ -33,6 +33,10 @@ public class Main {
         System.out.print(n + " ");
       }
       System.out.println();
+    }
+
+    for (Chain c : possibleParentChains) {
+      System.out.println(c);
     }
 
   }
@@ -171,7 +175,7 @@ public class Main {
   }
 
   public static void findBranches(Chain c){
-    for (int i = 1; i < c.getChainLength(c) + 1; i++){
+    for (int i = 1; i < c.getChainLength() + 1; i++){
       
     }
   }

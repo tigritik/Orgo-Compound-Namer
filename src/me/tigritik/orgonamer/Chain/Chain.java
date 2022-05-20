@@ -1,8 +1,9 @@
-package me.tigritik.orgonamer.Chain;
+package me.tigritik.orgonamer.chain;
+
+import me.tigritik.orgonamer.Util;
+import me.tigritik.orgonamer.nodes.CarbonNode;
 
 import java.util.Collection;
-
-import me.tigritik.orgonamer.nodes.Node;
 
 public class Chain {
 
@@ -28,8 +29,8 @@ public class Chain {
         }
     }
     
-    public int getChainLength(Chain c){
-      return c.length; 
+    public int getChainLength(){
+      return length;
     }
 
     public int[] getNode(){
@@ -37,7 +38,7 @@ public class Chain {
     }
 
     public String toString(){
-      return "";
+      return "prefixes-" + Util.PREFIX[length] + "ane";
 
     }
 
