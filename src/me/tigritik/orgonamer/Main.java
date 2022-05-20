@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -15,6 +15,7 @@ import me.tigritik.orgonamer.nodes.FunctionalNode;
 
 public class Main {
 
+  // Nodes are 1-indexed
   private static int N; // number of nodes
   private static List<List<Integer>> adjList; // the edges between nodes
   private static int parentChainLength = 0; // length of parent chain
@@ -85,7 +86,7 @@ public class Main {
     int maxLength = 0;
     ArrayList<Integer> furthestNodes = new ArrayList<>();
 
-    for (int i = 0; i < info[0].length; i++) {
+    for (int i = 1; i < info[0].length; i++) {
       if (info[0][i] + 1 > maxLength) {
         furthestNodes.clear();
         maxLength = info[0][i] + 1;
@@ -103,7 +104,7 @@ public class Main {
     // runs a bfs from all ending nodes
     for (int start : furthestNodes) {
       info = bfs(start); // info[0] stores distances, info[1] stores parents
-      for (int i = 0; i < info[0].length; i++) {
+      for (int i = 1; i < info[0].length; i++) {
         if (info[0][i] + 1 > parentChainLength) {
           possibleParentChains.clear();
           parentChainLength = info[0][i] + 1;
@@ -155,9 +156,14 @@ public class Main {
   // givne an array of parents, return the path
   public static ArrayList<Integer> findPath(int[] parents, int start, int end){
     ArrayList<Integer> path = new ArrayList<>();
+    int curr = end;
+    while (curr != 0){
+      path.add(curr);
+      curr = parents[curr];
+    }
+    Collections.reverse(path);
 
     return path;
-
   } 
 
   public static int getConnections(FunctionalNode n){
