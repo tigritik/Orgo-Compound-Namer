@@ -3,15 +3,12 @@ package me.tigritik.orgonamer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import me.tigritik.orgonamer.chain.Chain;
+import me.tigritik.orgonamer.nodes.CarbonNode;
 import me.tigritik.orgonamer.nodes.FunctionalNode;
+import me.tigritik.orgonamer.nodes.Node;
 
 public class Main {
 
@@ -19,6 +16,7 @@ public class Main {
   private static int N; // number of nodes
   private static List<List<Integer>> adjList; // the edges between nodes
   private static int parentChainLength = 0; // length of parent chain
+  private static Node[] nodeList; //representation of nodes using objects
 
   public static void main(String[] args) throws IOException {
 
@@ -29,19 +27,17 @@ public class Main {
     ArrayList<Chain> possibleParentChains = findLongestChain();
 
     for (Chain c : possibleParentChains){
-      for (int n : c.getNodes()){
+      for (Node n : c.getNodes()){
         System.out.print(n + " ");
       }
       System.out.println();
     }
 
     for (Chain c : possibleParentChains) {
-      int i = 0;
-      for (int node : c.getNodes()) {
-        if (node.branchAt(i)) {
-          System.out.print(i + "-");
+      for (int i = 1; i < c.getNodes().length; i++) {
+        if (c.branchAt(i)) {
+          System.out.print(i + "-" + nodeList[i].getConnections() + "-");
         }
-        i++;
       }
       System.out.println(c);
     }
@@ -55,9 +51,11 @@ public class Main {
 
     N = Integer.parseInt(st.nextToken());
     adjList = new ArrayList<>(N);
+    nodeList = new Node[N+1];
 
     for (int i = 0; i < N+1; i++) {
       adjList.add(new ArrayList<>());
+      nodeList[i] = new CarbonNode(i);
     }
 
     while (bf.ready()) {
@@ -66,6 +64,8 @@ public class Main {
 
       adjList.get(a).add(b);
       adjList.get(b).add(a);
+      nodeList[a].addConnection(nodeList[b]);
+      nodeList[b].addConnection(nodeList[a]);
     }
 
   }
@@ -119,10 +119,10 @@ public class Main {
         if (info[0][i] + 1 > parentChainLength) {
           possibleParentChains.clear();
           parentChainLength = info[0][i] + 1;
-          Chain L = new Chain(findPath(info[1], start, i));
+          Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
           possibleParentChains.add(L);
         } else if (info[0][i] + 1 == parentChainLength) {
-          Chain L = new Chain(findPath(info[1], start, i));
+          Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
           possibleParentChains.add(L);
         }
       }
@@ -185,6 +185,14 @@ public class Main {
     for (int i = 1; i < c.getChainLength() + 1; i++){
       
     }
+  }
+
+  private static Collection<Node> convertIntegersToNodes(Collection<Integer> ints) {
+    Collection<Node> c = new ArrayList<>(ints.size());
+    for (int i : ints) {
+      c.add(nodeList[i]);
+    }
+    return c;
   }
 
   

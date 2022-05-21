@@ -30,12 +30,19 @@ public class FunctionalNode extends Node {
         return new ArrayList<>(s);
     }
 
+    @Override
+    public void addConnection(Node n) {
+
+    }
+
     public FunctionalNode() {
-        
+
+        super(1);
     }
 
     public FunctionalNode(String iupacName) {
-        
+
+        super(1);
         this.iupacName = iupacName;
         inParentChain = false;
         weight = 0;
@@ -44,15 +51,17 @@ public class FunctionalNode extends Node {
     public FunctionalNode(String iupacName, boolean inParentChain) {
         //name = "carboxylic acid" or "bromine" or "chlorine"
         //iupacName = "oic - acid" or "bromo" or "chloro"
-        
-        
+
+
+        super(1);
         this.iupacName = iupacName;
         this.inParentChain = inParentChain;
         weight = 0;
     }
 
     public FunctionalNode(String iupacName, boolean inParentChain, double weight) {
-        
+
+        super(1);
         this.iupacName = iupacName;
         this.inParentChain = inParentChain;
         this.weight = weight;
@@ -61,7 +70,8 @@ public class FunctionalNode extends Node {
     public FunctionalNode(String iupacName, boolean inParentChain, double weight, boolean hasPriority) {
         //boolean hasPriority: carboxylic acid is greater than everything so true, if carboxylic acid exists and ketone exists
         //ketone has lower priority so false. 
-        
+
+        super(1);
         this.iupacName = iupacName;
         this.inParentChain = inParentChain;
         this.weight = weight;

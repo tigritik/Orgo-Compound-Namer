@@ -1,21 +1,19 @@
 package me.tigritik.orgonamer.nodes;
 
+import me.tigritik.orgonamer.exceptions.NodeSaturatedException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class CarbonNode extends FunctionalNode {
+public class CarbonNode extends Node {
 
     private Node n1;
     private Node n2;
     private Node n3;
     private Node n4;
-
-    private String baseName;
-
-    private static final String[] rootPrefix = { "", "meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non",
-      "dec", "undec", "dodec" };
+    private int num;
 
     public List<Node> getConnections() {
         Set<Node> s = new HashSet<>(4);
@@ -26,26 +24,37 @@ public class CarbonNode extends FunctionalNode {
         return new ArrayList<>(s);
     }
 
-    public CarbonNode(int numCarbons) {
-        
-        super(rootPrefix[numCarbons]);
-        setBaseName(numCarbons,false);
-        
+    public CarbonNode(int n) {
+        super(4);
+        if (n < 0) {
+            throw new IllegalArgumentException("Carbon Node cannot be numbered as " + n);
+        }
+        num = n;
     }
 
+    @Override
+    public void addConnection(Node n) {
+        if (n1 == null) {
+            n1 = n;
+            return;
+        }
+        if (n2 == null) {
+            n2 = n;
+            return;
 
-
-    
-
-    public void setBaseName(int chainLength, boolean inParentChain) {
-    // i.e. methyl, methane, propane, propyl, etc
-    if (inParentChain) {
-      this.baseName = rootPrefix[chainLength] + "ane";
-    } else {
-      this.baseName = rootPrefix[chainLength] + "yl";
+        }
+        if (n3 == null) {
+            n3 = n;
+            return;
+        }
+        if (n4 == null) {
+            n4 = n;
+            return;
+        }
+        throw new NodeSaturatedException(n);
     }
 
-  }
-
-    
+    public String toString() {
+        return "Carbon " + num;
+    }
 }
