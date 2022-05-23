@@ -4,13 +4,22 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+<<<<<<< Updated upstream
+=======
+import java.util.Collection;
+>>>>>>> Stashed changes
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+<<<<<<< Updated upstream
 import me.tigritik.orgonamer.Chain.Chain;
+=======
+import me.tigritik.orgonamer.chain.Chain;
+import me.tigritik.orgonamer.nodes.CarbonNode;
+>>>>>>> Stashed changes
 import me.tigritik.orgonamer.nodes.FunctionalNode;
 
 public class Main {
@@ -28,10 +37,22 @@ public class Main {
     
     ArrayList<Chain> possibleParentChains = findLongestChain();
 
+<<<<<<< Updated upstream
     for (Chain c : possibleParentChains){
       for (int n : c.getNode()){
         System.out.print(n + " ");
       }
+=======
+    for (Chain c : possibleParentChains) {
+      for (int i = 1; i < c.getNodes().length; i++) {
+        System.out.print(c.getNodes()[i] + " ");
+        System.out.println();
+        if (c.branchAt(i)) {
+          System.out.println(i + "-" + nodeList[i].getConnections() + "-");
+        }
+      }
+      System.out.println(c);
+>>>>>>> Stashed changes
       System.out.println();
     }
 
@@ -176,5 +197,6 @@ public class Main {
     }
   }
 
+  
   
 }
