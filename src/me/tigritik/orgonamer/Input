@@ -1,0 +1,59 @@
+public class Input {
+
+    private final String filePath;
+    private final BufferedReader bf;
+    private final StringTokenizer st;
+
+    public Input(String path) {
+        filePath = path;
+        bf = inputReader(path);
+        st = inputTokenizer(p)th
+;
+;
+;
+    }
+
+    public BufferedReader getBufferedReader(){
+        return bf;
+    }
+    public StringTokenizer getStringTokenizer(){
+        return st;
+    }
+    public String getFilePath(){
+        return filePath;
+    }
+    
+    public void fillAdjacencyList() throws IOException {
+     
+
+    N = Integer.parseInt(st.nextToken());
+    adjList = new ArrayList<>(N);
+    nodeList = new Node[N+1];
+
+    for (int i = 0; i < N+1; i++) {
+      adjList.add(new ArrayList<>());
+      nodeList[i] = new CarbonNode(i);
+    }
+
+    while (bf.ready()) {
+      st = new StringTokenizer(bf.readLine());
+      int a = Integer.parseInt(st.nextToken()), b = Integer.parseInt(st.nextToken());
+
+      adjList.get(a).add(b);
+      adjList.get(b).add(a);
+      nodeList[a].addConnection(nodeList[b]);
+      nodeList[b].addConnection(nodeList[a]);
+    }
+
+  }
+  
+  private static final BufferedReader inputReader(String fileName) throws IOException {
+    return new BufferedReader(new FileReader(fileName));
+  }
+
+  private static final StringTokenizer inputTokenizer() {
+      return new StringTokenizer(bf.readLine());
+  }
+
+    
+}

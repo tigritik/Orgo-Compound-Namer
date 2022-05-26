@@ -44,36 +44,9 @@ public class Main {
 
   }
 
-  public static void fillAdjacencyList() throws IOException {
-    BufferedReader bf = inputReader("Input.in");
+ 
 
-    StringTokenizer st = new StringTokenizer(bf.readLine());
-
-    N = Integer.parseInt(st.nextToken());
-    adjList = new ArrayList<>(N);
-    nodeList = new Node[N+1];
-
-    for (int i = 0; i < N+1; i++) {
-      adjList.add(new ArrayList<>());
-      nodeList[i] = new CarbonNode(i);
-    }
-
-    while (bf.ready()) {
-      st = new StringTokenizer(bf.readLine());
-      int a = Integer.parseInt(st.nextToken()), b = Integer.parseInt(st.nextToken());
-
-      adjList.get(a).add(b);
-      adjList.get(b).add(a);
-      nodeList[a].addConnection(nodeList[b]);
-      nodeList[b].addConnection(nodeList[a]);
-    }
-
-  }
-
-  public static BufferedReader inputReader(String fileName) throws IOException {
-    return new BufferedReader(new FileReader(fileName));
-  }
-
+  
   // not sure if the best way to store the paths (given by start and end carbon,
   // so its an arraylist of pairs)
   // is ArrayList<List<Integer>>

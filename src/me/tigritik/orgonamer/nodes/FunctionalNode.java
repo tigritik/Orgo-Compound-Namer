@@ -14,10 +14,9 @@ public class FunctionalNode extends Node {
     private Node n3;
     private Node n4;
 
-    private double weight;
     private String iupacName;
     private String name;
-    private boolean inParentChain;
+    private boolean isPartOfParentChain;
     private boolean hasPriority;
 
     public List<Node> getConnections() {
@@ -30,77 +29,92 @@ public class FunctionalNode extends Node {
         return new ArrayList<>(s);
     }
 
-    @Override
-    public void addConnection(Node n) {
-
-    }
 
     public FunctionalNode() {
 
-        super(1);
+        super(4);
     }
 
+    
     public FunctionalNode(String iupacName) {
-
-        super(1);
-        this.iupacName = iupacName;
-        inParentChain = false;
-        weight = 0;
+      super(4);
+      this.iupacName = iupacName;
     }
 
-    public FunctionalNode(String iupacName, boolean inParentChain) {
+    public FunctionalNode(String iupacName, boolean isPartOfParentChain) {
         //name = "carboxylic acid" or "bromine" or "chlorine"
         //iupacName = "oic - acid" or "bromo" or "chloro"
 
 
-        super(1);
-        this.iupacName = iupacName;
-        this.inParentChain = inParentChain;
-        weight = 0;
+        super(4);
+        this.iupacName = returnFunctionalGroupName(iupacName);
+        this.isPartOfParentChain = isPartOfParentChain;
+        
     }
 
-    public FunctionalNode(String iupacName, boolean inParentChain, double weight) {
-
-        super(1);
-        this.iupacName = iupacName;
-        this.inParentChain = inParentChain;
-        this.weight = weight;
+    public FunctionalNode(boolean isPartOfParentChain) {
+      super(4);
+      this.isPartOfParentChain = isPartOfParentChain;
     }
 
-    public FunctionalNode(String iupacName, boolean inParentChain, double weight, boolean hasPriority) {
-        //boolean hasPriority: carboxylic acid is greater than everything so true, if carboxylic acid exists and ketone exists
-        //ketone has lower priority so false. 
-
-        super(1);
-        this.iupacName = iupacName;
-        this.inParentChain = inParentChain;
-        this.weight = weight;
-        this.hasPriority = hasPriority;
+    public String getIUPACName(){
+      return iupacName;
+    }
+    
+    public boolean getIsPartOfParentChain() {
+      return isPartOfParentChain;
     }
 
-    public String getIUPACName() {
-        return iupacName;
+    public void setIsPartOfParentChain(boolean bn) {
+      isPartOfParentChain = bn; 
     }
 
-    public FunctionalNode returnFunctionalGroupName(String functionalGroup) {
+@Override
+    public void addConnection(Node n) {
+        if (n1 == null) {
+            n1 = n;
+            return;
+        }
+        if (n2 == null) {
+            n2 = n;
+            return;
+
+        }
+        if (n3 == null) {
+            n3 = n;
+            return;
+        }
+        if (n4 == null) {
+            n4 = n;
+            return;
+        }
+       
+    }
+    
+
+    
+
+    
+
+    public String returnFunctionalGroupName(String functionalGroup) {
     switch (functionalGroup) {
       case "F":
-        return new FunctionalNode("fluoro");
+        return "fluoro";
 
       case "NO2":
-        return new FunctionalNode("nitro");
+        return "nitro";
 
       case "Br":
-        return new FunctionalNode("bromo");
+        return "bromo";
 
       case "N3":
-        return new FunctionalNode("azido");
+        return "azido";
 
       case "I":
-        return new FunctionalNode("iodo");
+        return "iodo";
       // i added smth to get rid of error idk waht u want to set it as
       default:
-        return new FunctionalNode("other");
+        return "";
     }
   }
 
