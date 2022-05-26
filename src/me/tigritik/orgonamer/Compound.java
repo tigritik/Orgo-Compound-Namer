@@ -20,7 +20,7 @@ public class Compound{
     private Node[] nodeList; //representation of nodes using objects
 
     public ArrayList<Chain> findLongestChain() {
-
+        
     /*
      * Idea is as follows:
      * (1) find a leaf and run a bfs from it, noting the nodes furthest away from
