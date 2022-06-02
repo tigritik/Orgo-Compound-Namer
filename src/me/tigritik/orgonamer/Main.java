@@ -13,7 +13,6 @@ import me.tigritik.orgonamer.nodes.FunctionalNode;
 import me.tigritik.orgonamer.nodes.Node;
 
 public class Main {
-  // Nodes are 1-indexed
   
 
   public static void main(String[] args) throws IOException {
@@ -21,26 +20,30 @@ public class Main {
     Compound c = new Compound();
 
     // reads in inputs and fills out (adjList)
-    fillAdjacencyList(c);
+    c.fillAdjacencyList(c);
 
     
-    ArrayList<Chain> possibleParentChains = findLongestChain();
+    ArrayList<Chain> possibleParentChains = c.findLongestChain();
 
-    for (Chain c : possibleParentChains){
-      for (Node n : c.getNodes()){
+    for (Chain chain : possibleParentChains){
+      for (Node n : chain.getNodes()){
         System.out.print(n + " ");
       }
       System.out.println();
     }
 
-    for (Chain c : possibleParentChains) {
-      for (int i = 1; i < c.getNodes().length; i++) {
-        if (c.branchAt(i)) {
-          System.out.print(i + "-" + nodeList[i].getConnections() + "-");
+    for (Chain chain : possibleParentChains) {
+      for (int i = 1; i < chain.getNodes().length; i++) {
+        if (chain.branchAt(i)) {
+          System.out.print(i + "-" + c.getNodeList()[i].getConnections() + "-");
         }
       }
       System.out.println(c);
     }
+
+    c.findFinalParentChain();
+    String name = c.getName();
+    System.out.println(name);
 
 
 

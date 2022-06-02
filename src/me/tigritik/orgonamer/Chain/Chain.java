@@ -5,10 +5,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
 import me.tigritik.orgonamer.nodes.Node;
 
-public class Chain {
+public class Chain extends Compound{
 
   private final int length;
   private final Node[] nodes;
@@ -94,9 +95,11 @@ public class Chain {
         // comparetobranch
         if (compareName(branchA, branchB) > 0) {
           return 1;
-        } else if (compareName(branchA, branchB) < 0) {
+        } 
+        else if (compareName(branchA, branchB) < 0) {
           return -1;
-        } else {
+        } 
+        else {
           index++;
         }
       }
@@ -119,18 +122,18 @@ public class Chain {
     return name + nameBranch();
   }
 
-  public static ArrayList<Chain> findLongestChain(Node start, Node parent) {
+  public ArrayList<Chain> findLongestChain(Node start, Node parent) {
 
     ArrayList<Chain> possibleParentChains = new ArrayList<>();
 
     int[][] info = bfs(start, parent); // info[0] stores distances, info[1] stores parents
     for (int i = 1; i < info[0].length; i++) {
-      if (info[0][i] + 1 > parentChainLength) {
+      if (info[0][i] + 1 > getParentChainLength()) {
         possibleParentChains.clear();
-        parentChainLength = info[0][i] + 1;
+        setParentChainLength(info[0][i] + 1);
         Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
         possibleParentChains.add(L);
-      } else if (info[0][i] + 1 == parentChainLength) {
+      } else if (info[0][i] + 1 == getParentChainLength()) {
         Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
         possibleParentChains.add(L);
       }
@@ -138,16 +141,16 @@ public class Chain {
     return possibleParentChains;
   }
 
-  public static int[][] bfs(int start, int parent) {
-    int[][] info = new int[2][N + 1]; // info[0] stores distances, info[1] stores parents
+  public int[][] bfs(int start, int parent) {
+    int[][] info = new int[2][getN() + 1]; // info[0] stores distances, info[1] stores parents
     Queue<Integer> q = new LinkedList<>();
 
     q.add(start);
 
     while (q.size() != 0) {
       int curr = q.poll();
-      for (int i = 0; i < adjList.get(curr).size(); i++) {
-        int next = adjList.get(curr).get(i);
+      for (int i = 0; i < getAdjList().get(curr).size(); i++) {
+        int next = getAdjList().get(curr).get(i);
         if (info[0][next] == 0 && next != start && next != parent) { // next node is not visited
           info[0][next] = info[0][curr] + 1;
           info[1][next] = curr;

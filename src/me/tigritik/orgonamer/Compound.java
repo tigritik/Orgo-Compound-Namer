@@ -1,13 +1,16 @@
 package me.tigritik.orgonamer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.StringTokenizer;
 
 import me.tigritik.orgonamer.chain.Chain;
+import me.tigritik.orgonamer.nodes.CarbonNode;
 import me.tigritik.orgonamer.nodes.FunctionalNode;
 import me.tigritik.orgonamer.nodes.Node;
 
@@ -19,58 +22,84 @@ public class Compound{
     private int parentChainLength = 0; // length of parent chain
     private Node[] nodeList; //representation of nodes using objects
 
+    public void fillAdjacencyList(Compound m) throws IOException {
+      m.setN(Integer.parseInt(st.nextToken()));
+      int N = m.getN();
+      List<List<Integer>> adjList = new ArrayList<>();
+      m.setNodeList(new Node[N + 1]);
+  
+      for (int i = 0; i < N + 1; i++) {
+        adjList.add(new ArrayList<>());
+        m.getNodeList()[i] = new CarbonNode(i);
+      }
+  
+      while (bf.ready()) {
+        st = new StringTokenizer(bf.readLine());
+        int a = Integer.parseInt(st.nextToken()), b = Integer.parseInt(st.nextToken());
+  
+        adjList.get(a).add(b);
+        adjList.get(b).add(a);
+        m.getNodeList()[a].addConnection(m.getNodeList()[b]);
+        m.getNodeList()[b].addConnection(m.getNodeList()[a]);
+      }
+  
+      m.setAdjList(adjList);
+  
+  
+    }
+
     public ArrayList<Chain> findLongestChain() {
 
-    /*
-     * Idea is as follows:
-     * (1) find a leaf and run a bfs from it, noting the nodes furthest away from
-     * it, stored in (furthestNodes)
-     * (2) from all nodes in (furthestNodes), run another bfs, noting nodes furthest
-     * away from it
-     * (3) the paths with max length are possible parent chains
-     */
+      /*
+      * Idea is as follows:
+      * (1) find a leaf and run a bfs from it, noting the nodes furthest away from
+      * it, stored in (furthestNodes)
+      * (2) from all nodes in (furthestNodes), run another bfs, noting nodes furthest
+      * away from it
+      * (3) the paths with max length are possible parent chains
+      */
 
-    // finds leaf for (1)
-    int firstLeaf = findFirstLeaf();
+      // finds leaf for (1)
+      int firstLeaf = findFirstLeaf();
 
-    // first bfs to find correct ending nodes
-    int[][] info = bfs(firstLeaf);
+      // first bfs to find correct ending nodes
+      int[][] info = bfs(firstLeaf);
 
-    int maxLength = 0;
-    ArrayList<Integer> furthestNodes = new ArrayList<>();
+      int maxLength = 0;
+      ArrayList<Integer> furthestNodes = new ArrayList<>();
 
-    for (int i = 1; i < info[0].length; i++) {
-      if (info[0][i] + 1 > maxLength) {
-        furthestNodes.clear();
-        maxLength = info[0][i] + 1;
-        furthestNodes.add(i);
-      }
-
-      else if (info[0][i] + 1 == maxLength) {
-        furthestNodes.add(i);
-      }
-    }
-
-    // stores all possible start and end nodes
-    ArrayList<Chain> possibleParentChains = new ArrayList<>();
-
-    // runs a bfs from all ending nodes
-    for (int start : furthestNodes) {
-      info = bfs(start); // info[0] stores distances, info[1] stores parents
       for (int i = 1; i < info[0].length; i++) {
-        if (info[0][i] + 1 > parentChainLength) {
-          possibleParentChains.clear();
-          parentChainLength = info[0][i] + 1;
-          Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
-          possibleParentChains.add(L);
-        } else if (info[0][i] + 1 == parentChainLength) {
-          Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
-          possibleParentChains.add(L);
+        if (info[0][i] + 1 > maxLength) {
+          furthestNodes.clear();
+          maxLength = info[0][i] + 1;
+          furthestNodes.add(i);
+        }
+
+        else if (info[0][i] + 1 == maxLength) {
+          furthestNodes.add(i);
         }
       }
-    }
 
-    return possibleParentChains;
+      // stores all possible start and end nodes
+      ArrayList<Chain> possibleParentChains = new ArrayList<>();
+
+      // runs a bfs from all ending nodes
+      for (int start : furthestNodes) {
+        info = bfs(start); // info[0] stores distances, info[1] stores parents
+        for (int i = 1; i < info[0].length; i++) {
+          if (info[0][i] + 1 > parentChainLength) {
+            possibleParentChains.clear();
+            parentChainLength = info[0][i] + 1;
+            Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
+            possibleParentChains.add(L);
+          } else if (info[0][i] + 1 == parentChainLength) {
+            Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
+            possibleParentChains.add(L);
+          }
+        }
+      }
+
+      return possibleParentChains;
 
   }
 
@@ -106,7 +135,6 @@ public class Compound{
     return -1;
   }
 
-  // givne an array of parents, return the path
   public ArrayList<Integer> findPath(int[] parents, int start, int end){
     ArrayList<Integer> path = new ArrayList<>();
     int curr = end;
@@ -119,6 +147,20 @@ public class Compound{
     return path;
   } 
 
+  //TODO
+  public Chain findFinalParentChain(){
+
+
+  }
+
+  //TODO
+  public String getName(){
+    String name = "";
+
+    return name;
+  }
+
+
   public int getConnections(FunctionalNode n){
     return -1; 
   }
@@ -129,7 +171,7 @@ public class Compound{
     }
   }
 
-  private Collection<Node> convertIntegersToNodes(Collection<Integer> ints) {
+  public Collection<Node> convertIntegersToNodes(Collection<Integer> ints) {
     Collection<Node> c = new ArrayList<>(ints.size());
     for (int i : ints) {
       c.add(nodeList[i]);
@@ -165,5 +207,8 @@ public class Compound{
     nodeList = list;
   }
 
+  public void setParentChainLength(int length){
+    parentChainLength = length;
+  }
   
 }
