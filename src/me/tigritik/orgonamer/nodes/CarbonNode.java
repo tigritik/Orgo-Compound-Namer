@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import me.tigritik.orgonamer.Util;
 
 public class CarbonNode extends Node {
 
@@ -14,7 +15,8 @@ public class CarbonNode extends Node {
     private Node n3;
     private Node n4;
     private int num;
-
+    private boolean isPartOfParentChain;
+    
     public List<Node> getConnections() {
         Set<Node> s = new HashSet<>(4);
         s.add(n1);
@@ -30,6 +32,12 @@ public class CarbonNode extends Node {
             throw new IllegalArgumentException("Carbon Node cannot be numbered as " + n);
         }
         num = n;
+    }
+
+    public CarbonNode(int n, boolean bn) {
+        super(n);
+        isPartOfParentChain = bn;
+        
     }
 
     @Override
@@ -57,4 +65,6 @@ public class CarbonNode extends Node {
     public String toString() {
         return "Carbon " + num;
     }
+
+    
 }

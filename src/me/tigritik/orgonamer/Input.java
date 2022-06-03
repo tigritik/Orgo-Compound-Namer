@@ -3,12 +3,9 @@ package me.tigritik.orgonamer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.StringTokenizer;
 
-import me.tigritik.orgonamer.nodes.CarbonNode;
-import me.tigritik.orgonamer.nodes.Node;
 
 public class Input {
 
@@ -40,7 +37,7 @@ public class Input {
     return new BufferedReader(new FileReader(fileName));
   }
 
-  private final StringTokenizer inputTokenizer() {
+  private final StringTokenizer inputTokenizer() throws IOException {
     return new StringTokenizer(bf.readLine());
   }
 

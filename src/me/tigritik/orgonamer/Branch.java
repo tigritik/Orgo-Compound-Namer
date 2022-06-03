@@ -1,7 +1,5 @@
 package me.tigritik.orgonamer;
 
-import me.tigritik.orgonamer.nodes.FunctionalNode;
-import me.tigritik.orgonamer.nodes.Node;
 
 class Branch {
   

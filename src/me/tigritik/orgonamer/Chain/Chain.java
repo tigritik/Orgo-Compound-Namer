@@ -1,32 +1,33 @@
 package me.tigritik.orgonamer.chain;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.List;
+import java.util.Queue;
 
 import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
-import me.tigritik.orgonamer.nodes.Node;
 
 public class Chain extends Compound{
 
+  private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta");
   private final int length;
   private int[] nodes; //[null, 1,3,5]
   private String name;
 
-  public Chain(int length) {
+  public Chain(int length) throws IOException{
     this.length = length;
     nodes = new int[length + 1];
   }
 
-  public Chain(Collection<Integer> nodes) {
+  public Chain(Collection<Integer> nodes) throws IOException{
     this(nodes.size(), nodes);
   }
 
-  public Chain(int length, Collection<Integer> nodes) {
+  public Chain(int length, Collection<Integer> nodes)  throws IOException{
     this(length);
     int i = 1;
     for (int n : nodes) {
@@ -35,70 +36,90 @@ public class Chain extends Compound{
     }
   }
 
-  public int getChainLength() {
-    return length;
-  }
-
-  public int[] getNodes() {
-    return nodes;
-  }
-
+  
   public boolean branchAt(int index) {
-    return (getNodeList()[nodes[index]].getConnections().size() == 4);
+    for (int next : getAdjList().get(nodes[index])) {
+      if (contains(nodes, next) == false) {
+        return true;
+      }
+    }
+    return false;
   }
+
+ 
 
   public String toString() {
     return "prefixes-" + Util.PREFIX[length] + "ane";
   }
 
-  public int compareTo(Chain b) {
+  public int compareTo(Chain b) throws IOException{
 
     ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains pooints in which it braches off
     ArrayList<Integer> branchPointsB = new ArrayList<Integer>();
-    for (int i = 1; i < this.getNodes().length; i++) {
+    
+
+
+    for (int i = 1; i < nodes.length; i++) {
+      //change this 
       if (this.branchAt(i)) {
         branchPointsThis.add(i);
       }
     }
     for (int i = 1; i < b.getNodes().length; i++) {
-      if (this.branchAt(i)) {
+      if (b.branchAt(i)) {
         branchPointsB.add(i);
       }
     }
-
+    // System.out.println("BranchPointsThis: ");
+    // for (int branchNumber : branchPointsThis){
+    //   System.out.print(branchNumber + " ");
+    // }
+    // System.out.println();
+    // System.out.println("BranchPointsB:");
+    // for (int branchNumber : branchPointsB){
+    //   System.out.print(branchNumber + " ");
+    // }
+    // System.out.println("DONE");
+    
+    //return 0;
+    
     int index = 0;
 
-    if (branchPointsThis.size() < branchPointsB.size())
-      while (index < branchPointsThis.size() && index < branchPointsB.size()) {
-        if (branchPointsThis.get(index) < branchPointsB.get(index)) {
-          return 1;
-        } else if (branchPointsThis.get(index) > branchPointsB.get(index)) {
-          return -1;
-        } else {
-          index++;
-        }
+    while (index < branchPointsThis.size() && index < branchPointsB.size()) {
+      if (branchPointsThis.get(index) < branchPointsB.get(index)) {
+        return 1;
+      } 
+      else if (branchPointsThis.get(index) > branchPointsB.get(index)) {
+        return -1;
+      } 
+      else {
+        index++;
       }
+    }
+    
 
     if (branchPointsThis.size() == branchPointsB.size()) { // branching points are identical
       index = 0;
-      String branchA = "", branchB = "";
+      String branchThis = "", branchB = "";
       while (index < branchPointsThis.size()) {
         for (int next : getAdjList().get(nodes[branchPointsThis.get(index)])) {
-          if (Arrays.asList(nodes).contains(next) == false) {
-            branchA = nameBranch(next, nodes[branchPointsThis.get(index)]);
+          if (contains(nodes, next) == false) {
+            Compound branchThisCompound = new Compound(1, createAdjList(next, nodes[branchPointsThis.get(index)]));
+            branchThis = branchThisCompound.getName(false);
           }
         }
-        for (int next : b.getAdjList().get(nodes[branchPointsB.get(index)])) {
-          if (Arrays.asList(nodes).contains(next) == false) {
-            branchB = nameBranch(next, nodes[branchPointsB.get(index)]);
+        for (int next : b.getAdjList().get(b.getNodes()[branchPointsB.get(index)])) {
+          if (contains(nodes, next) == false) {
+            Compound branchBCompound = new Compound(1, createAdjList(next, b.getNodes()[branchPointsB.get(index)]));
+            branchB = branchBCompound.getName(false);
           }
         }
 
         // comparetobranch
-        if (compareName(branchA, branchB) > 0) {
+        if (compareName(branchThis, branchB) > 0) {
           return 1;
         } 
-        else if (compareName(branchA, branchB) < 0) {
+        else if (compareName(branchThis, branchB) < 0) {
           return -1;
         } 
         else {
@@ -107,33 +128,66 @@ public class Chain extends Compound{
       }
       // branhc name are also identical
       return 1;
-    } else {
+    } 
+    else {
       if (branchPointsThis.size() > branchPointsB.size()) {
         return 1;
-      } else {
+      } 
+      else {
         return -1;
       }
     }
-
+    
   }
 
-  private ArrayList<String> nameBranchRecursive(int start, int parent) {
-    String name = "";
-    ArrayList<Chain> c = findLongestChain(start, parent);
-    
-    for(int i = 0; i< c.size(); i++) {
-      
+  public ArrayList<Integer> returnBranchIndices() {
+    ArrayList<Integer> indices = new ArrayList<>();
+
+    for(int i = 0; i <nodes.length; i++) {
+      if(branchAt(i)) {
+        indices.add(nodes[i]);
+      }
     }
 
-
-    return name + nameBranch();
+    return indices;
   }
+
+  
+  /*private ArrayList<String> nameBranchRecursive(ArrayList<String> stringList, Chain chain) {
+    String name = "";
+    ArrayList<Integer> indicesList = chain.returnBranchIndices();
+    if(indicesList.size()==0) {
+      stringList.add(Util.PREFIX[chain.nodes.length]);
+      return stringList;
+    }
+    
+    
+    //1-methyl-2-propylhexane
+    //1-methyl, -2-propyl, hexane
+
+    return name + nameBranchRecursive();
+  }
+  
 
   public String nameBranch(int start, int parent) {
+    ArrayList<Chain> chainList = findLongestChain(start, parent);
+    List<String> possibleNames = new ArrayList<>();
+
+    for(int i = 0; i<chainList.size(); i++) {
+      possibleNames.add(nameBranchRecursive(chainList.get(i)));
+    }
+
+    
 
   }
+*/
 
-  public ArrayList<Chain> findLongestChain(int start, int parent) {
+
+
+
+  
+    
+  public ArrayList<Chain> findLongestChain(int start, int parent) throws IOException {
 
     ArrayList<Chain> possibleParentChains = new ArrayList<>();
 
@@ -179,6 +233,15 @@ public class Chain extends Compound{
 
     return 0;
 
+  }
+
+  
+public int getChainLength() {
+    return length;
+  }
+
+  public int[] getNodes() {
+    return nodes;
   }
 
 }
