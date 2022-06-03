@@ -22,7 +22,7 @@ import me.tigritik.orgonamer.nodes.Node;
 
 public class Compound{
 
-  private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta", "1", "2", "3", "4", "5", "6", "7", "8","9");
+  private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta", "1", "2", "3", "4", "5", "6", "7", "8","9", "sec", "tert");
     private int N; // number of nodes
     private List<List<Integer>> adjList = new ArrayList<List<Integer>>(); // the edges between nodes
     private int parentChainLength = 0; // length of parent chain
@@ -234,6 +234,20 @@ public class Compound{
           Compound fromBranch = new Compound(1, newAdjList);
           String nameOfBranch = fromBranch.getName(false);
           
+          switch (nameOfBranch){
+            case "1-methylethyl": 
+              nameOfBranch = "isopropyl";
+              break;
+            case "1-methylpropyl":
+              nameOfBranch = "sec-butyl";
+              break;
+            case "2-methylpropyl":
+              nameOfBranch = "isobutyl";
+              break;
+            case "1,1-dimethylethyl":
+              nameOfBranch = "tert-butyl";
+              break;
+          }
           
           if (!branchNames.containsKey(nameOfBranch)){
             branchNames.put(nameOfBranch, new ArrayList<Integer>());

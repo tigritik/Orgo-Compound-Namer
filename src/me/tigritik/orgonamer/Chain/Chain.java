@@ -54,7 +54,7 @@ public class Chain extends Compound{
 
   public int compareTo(Chain b) throws IOException{
 
-    ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains pooints in which it braches off
+    ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains points in which it branches off
     ArrayList<Integer> branchPointsB = new ArrayList<Integer>();
     
 
@@ -152,40 +152,7 @@ public class Chain extends Compound{
     return indices;
   }
 
-  
-  /*private ArrayList<String> nameBranchRecursive(ArrayList<String> stringList, Chain chain) {
-    String name = "";
-    ArrayList<Integer> indicesList = chain.returnBranchIndices();
-    if(indicesList.size()==0) {
-      stringList.add(Util.PREFIX[chain.nodes.length]);
-      return stringList;
-    }
-    
-    
-    //1-methyl-2-propylhexane
-    //1-methyl, -2-propyl, hexane
 
-    return name + nameBranchRecursive();
-  }
-  
-
-  public String nameBranch(int start, int parent) {
-    ArrayList<Chain> chainList = findLongestChain(start, parent);
-    List<String> possibleNames = new ArrayList<>();
-
-    for(int i = 0; i<chainList.size(); i++) {
-      possibleNames.add(nameBranchRecursive(chainList.get(i)));
-    }
-
-    
-
-  }
-*/
-
-
-
-
-  
     
   public ArrayList<Chain> findLongestChain(int start, int parent) throws IOException {
 
