@@ -1,9 +1,11 @@
 package me.tigritik.orgonamer.chain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.List;
 
 import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
@@ -12,22 +14,22 @@ import me.tigritik.orgonamer.nodes.Node;
 public class Chain extends Compound{
 
   private final int length;
-  private final Node[] nodes;
+  private int[] nodes; //[null, 1,3,5]
   private String name;
 
   public Chain(int length) {
     this.length = length;
-    nodes = new Node[length + 1];
+    nodes = new int[length + 1];
   }
 
-  public Chain(Collection<Node> nodes) {
+  public Chain(Collection<Integer> nodes) {
     this(nodes.size(), nodes);
   }
 
-  public Chain(int length, Collection<Node> nodes) {
+  public Chain(int length, Collection<Integer> nodes) {
     this(length);
     int i = 1;
-    for (Node n : nodes) {
+    for (int n : nodes) {
       this.nodes[i] = n;
       i++;
     }
@@ -37,12 +39,12 @@ public class Chain extends Compound{
     return length;
   }
 
-  public Node[] getNodes() {
+  public int[] getNodes() {
     return nodes;
   }
 
   public boolean branchAt(int index) {
-    return (nodes[index].getConnections().size() == 4);
+    return (getNodeList()[nodes[index]].getConnections().size() == 4);
   }
 
   public String toString() {
@@ -81,13 +83,13 @@ public class Chain extends Compound{
       index = 0;
       String branchA = "", branchB = "";
       while (index < branchPointsThis.size()) {
-        for (Node next : nodes[branchPointsThis.get(index)].getConnections()) {
-          if (next != null && next.getIsPartOfParentChain() == false) {
+        for (int next : getAdjList().get(nodes[branchPointsThis.get(index)])) {
+          if (Arrays.asList(nodes).contains(next) == false) {
             branchA = nameBranch(next, nodes[branchPointsThis.get(index)]);
           }
         }
-        for (Node next : b.getNodes()[branchPointsB.get(index)].getConnections()) {
-          if (next != null && next.getIsPartOfParentChain() == false) {
+        for (int next : b.getAdjList().get(nodes[branchPointsB.get(index)])) {
+          if (Arrays.asList(nodes).contains(next) == false) {
             branchB = nameBranch(next, nodes[branchPointsB.get(index)]);
           }
         }
@@ -115,14 +117,23 @@ public class Chain extends Compound{
 
   }
 
-  public String nameBranch(Node start, Node parent) {
+  private ArrayList<String> nameBranchRecursive(int start, int parent) {
     String name = "";
-    findLongestChain(start, parent);
+    ArrayList<Chain> c = findLongestChain(start, parent);
+    
+    for(int i = 0; i< c.size(); i++) {
+      
+    }
+
 
     return name + nameBranch();
   }
 
-  public ArrayList<Chain> findLongestChain(Node start, Node parent) {
+  public String nameBranch(int start, int parent) {
+
+  }
+
+  public ArrayList<Chain> findLongestChain(int start, int parent) {
 
     ArrayList<Chain> possibleParentChains = new ArrayList<>();
 
@@ -131,10 +142,10 @@ public class Chain extends Compound{
       if (info[0][i] + 1 > getParentChainLength()) {
         possibleParentChains.clear();
         setParentChainLength(info[0][i] + 1);
-        Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
+        Chain L = new Chain((findPath(info[1], start, i)));
         possibleParentChains.add(L);
       } else if (info[0][i] + 1 == getParentChainLength()) {
-        Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
+        Chain L = new Chain((findPath(info[1], start, i)));
         possibleParentChains.add(L);
       }
     }
@@ -163,6 +174,7 @@ public class Chain extends Compound{
     return info;
   }
 
+  // TODO
   public int compareName(String A, String B) {
 
     return 0;

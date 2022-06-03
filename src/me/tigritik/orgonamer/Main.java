@@ -24,9 +24,9 @@ public class Main {
 
     
     ArrayList<Chain> possibleParentChains = c.findLongestChain();
-
+    /* 
     for (Chain chain : possibleParentChains){
-      for (Node n : chain.getNodes()){
+      for (int n : chain.getNodes()){
         System.out.print(n + " ");
       }
       System.out.println();
@@ -36,12 +36,12 @@ public class Main {
       for (int i = 1; i < chain.getNodes().length; i++) {
         if (chain.branchAt(i)) {
           System.out.print(i + "-" + c.getNodeList()[i].getConnections() + "-");
-        }
+        } 
       }
       System.out.println(c);
-    }
+    }*/
 
-    c.findFinalParentChain();
+    c.findFinalParentChain(possibleParentChains);
     String name = c.getName();
     System.out.println(name);
 

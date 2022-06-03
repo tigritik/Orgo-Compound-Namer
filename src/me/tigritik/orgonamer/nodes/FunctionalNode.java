@@ -90,6 +90,19 @@ public class FunctionalNode extends Node {
         }
        
     }
+
+    public void setConnection(Node curr, Node replace) {
+      List<Node> list = this.getConnections();
+      int index = list.indexOf(curr);
+      if(index>0) {
+        list.set(index, replace);
+      }
+
+      
+
+    }
+
+    
     
 
     
