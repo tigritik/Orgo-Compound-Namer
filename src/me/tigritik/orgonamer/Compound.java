@@ -21,6 +21,8 @@ public class Compound{
     private List<List<Integer>> adjList; // the edges between nodes
     private int parentChainLength = 0; // length of parent chain
     private Node[] nodeList; //representation of nodes using objects
+    private Chain finalParentChain;
+    private String name;
 
     public void fillAdjacencyList(Compound m) throws IOException {
       m.setN(Integer.parseInt(st.nextToken()));
@@ -49,15 +51,15 @@ public class Compound{
     }
 
     public ArrayList<Chain> findLongestChain() {
-
-      /*
-      * Idea is as follows:
-      * (1) find a leaf and run a bfs from it, noting the nodes furthest away from
-      * it, stored in (furthestNodes)
-      * (2) from all nodes in (furthestNodes), run another bfs, noting nodes furthest
-      * away from it
-      * (3) the paths with max length are possible parent chains
-      */
+        
+    /*
+     * Idea is as follows:
+     * (1) find a leaf and run a bfs from it, noting the nodes furthest away from
+     * it, stored in (furthestNodes)
+     * (2) from all nodes in (furthestNodes), run another bfs, noting nodes furthest
+     * away from it
+     * (3) the paths with max length are possible parent chains
+     */
 
       // finds leaf for (1)
       int firstLeaf = findFirstLeaf();
@@ -90,10 +92,10 @@ public class Compound{
           if (info[0][i] + 1 > parentChainLength) {
             possibleParentChains.clear();
             parentChainLength = info[0][i] + 1;
-            Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
+            Chain L = new Chain((findPath(info[1], start, i)));
             possibleParentChains.add(L);
           } else if (info[0][i] + 1 == parentChainLength) {
-            Chain L = new Chain(convertIntegersToNodes(findPath(info[1], start, i)));
+            Chain L = new Chain((findPath(info[1], start, i)));
             possibleParentChains.add(L);
           }
         }
@@ -147,17 +149,24 @@ public class Compound{
     return path;
   } 
 
-  //TODO
-  public Chain findFinalParentChain(){
+  public void findFinalParentChain(ArrayList<Chain> possibleParentChainList){
+    Chain currentBest = possibleParentChainList.get(0);
 
-
+    for(Chain c: possibleParentChainList) {
+      if(currentBest.compareTo(c)<0) {
+        currentBest = c;
+      }
+    }
+    finalParentChain = currentBest; 
   }
 
   //TODO
   public String getName(){
-    String name = "";
-
-    return name;
+    //go thru final parent chain in order
+    //at branch points, store indices + call nameBranch
+    // Map < String, ArrayList<Int>> 
+    // sort branch names by compareNameBranch
+    //combine evrything
   }
 
 

@@ -36,11 +36,12 @@ public class Input {
 
 
 
-  private static final BufferedReader inputReader(String fileName) throws IOException {
+  private final BufferedReader inputReader(String fileName) throws IOException {
     return new BufferedReader(new FileReader(fileName));
   }
 
-  private static final StringTokenizer inputTokenizer() {
+  private final StringTokenizer inputTokenizer() {
     return new StringTokenizer(bf.readLine());
   }
 
+}
