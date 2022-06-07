@@ -11,23 +11,23 @@ import java.util.Queue;
 import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
 
-public class Chain extends Compound{
+public class Chain extends Compound implements Comparable<Chain> {
 
   private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta");
   private final int length;
   private int[] nodes; //[null, 1,3,5]
   private String name;
 
-  public Chain(int length) throws IOException{
+  public Chain(int length) throws IOException {
     this.length = length;
     nodes = new int[length + 1];
   }
 
-  public Chain(Collection<Integer> nodes) throws IOException{
+  public Chain(Collection<Integer> nodes) throws IOException {
     this(nodes.size(), nodes);
   }
 
-  public Chain(int length, Collection<Integer> nodes)  throws IOException{
+  public Chain(int length, Collection<Integer> nodes) throws IOException {
     this(length);
     int i = 1;
     for (int n : nodes) {
@@ -52,7 +52,7 @@ public class Chain extends Compound{
     return "prefixes-" + Util.PREFIX[length] + "ane";
   }
 
-  public int compareTo(Chain b) throws IOException{
+  public int compareTo(Chain b) {
 
     ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains points in which it branches off
     ArrayList<Integer> branchPointsB = new ArrayList<Integer>();

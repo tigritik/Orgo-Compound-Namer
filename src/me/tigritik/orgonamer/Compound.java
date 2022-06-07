@@ -2,16 +2,7 @@ package me.tigritik.orgonamer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import me.tigritik.orgonamer.chain.CarbonChain;
 import me.tigritik.orgonamer.chain.Chain;
@@ -31,7 +22,7 @@ public class Compound{
     private String name;
     private int headNode = -1;
 
-    public Compound() throws IOException{
+    public Compound() throws IOException {
       fillAdjacencyList();
     }
 
@@ -68,7 +59,7 @@ public class Compound{
   
     }
 
-    public ArrayList<Chain> findLongestChain() throws IOException{
+    public ArrayList<Chain> findLongestChain() {
         
     /*
      * Idea is as follows:
@@ -111,16 +102,20 @@ public class Compound{
       // runs a bfs from all ending nodes
       for (int start : furthestNodes) {
         info = bfs(start, -1); // info[0] stores distances, info[1] stores parents
-        for (int i = 1; i < info[0].length; i++) {
-          if (info[0][i] + 1 > parentChainLength) {
-            possibleParentChains.clear();
-            parentChainLength = info[0][i] + 1;
-            Chain L = new Chain((findPath(info[1], start, i)));
-            possibleParentChains.add(L);
-          } else if (info[0][i] + 1 == parentChainLength) {
-            Chain L = new Chain((findPath(info[1], start, i)));
-            possibleParentChains.add(L);
+        try {
+          for (int i = 1; i < info[0].length; i++) {
+            if (info[0][i] + 1 > parentChainLength) {
+              possibleParentChains.clear();
+              parentChainLength = info[0][i] + 1;
+              Chain L = new Chain((findPath(info[1], start, i)));
+              possibleParentChains.add(L);
+            } else if (info[0][i] + 1 == parentChainLength) {
+              Chain L = new Chain((findPath(info[1], start, i)));
+              possibleParentChains.add(L);
+            }
           }
+        } catch (IOException e) {
+          e.printStackTrace();
         }
       }
 
@@ -173,7 +168,7 @@ public class Compound{
     return path;
   } 
 
-  public void findFinalParentChain(ArrayList<Chain> possibleParentChainList)  throws IOException{
+  public void findFinalParentChain(ArrayList<Chain> possibleParentChainList) {
     Chain currentBest = possibleParentChainList.get(0);
 
     for (int i = 1; i < possibleParentChainList.size(); i++){
@@ -181,11 +176,14 @@ public class Compound{
         currentBest = possibleParentChainList.get(i);
       }
     }
-    finalParentChain = currentBest; 
+    finalParentChain = currentBest;
+
+    /*PriorityQueue<Chain> pq = new PriorityQueue<>(possibleParentChainList);
+    finalParentChain = pq.remove();*/
   }
 
   //TODO
-  public String getName(Boolean isPartOfFinalParentChain) throws IOException{
+  public String getName(Boolean isPartOfFinalParentChain) {
     ArrayList<Chain> possibleParentChains = findLongestChain();
     
     // for (Chain c : possibleParentChains){
@@ -291,12 +289,19 @@ public class Compound{
       n++;
     }
 
-    CarbonChain c = new CarbonChain(parentChainLength, isPartOfFinalParentChain);
-    name += c.getName();
+    try {
+      CarbonChain c = new CarbonChain(parentChainLength, isPartOfFinalParentChain);
+
+      name += c.getName();
     
 
-    this.name = name;
-    return name;
+      this.name = name;
+      return name;
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+      return "";
+    }
   }
   
   //returns -1 if String a is alphabetically first than String b, and +1 if String is alphabetically first. returns 0 if the strings are equal,.
