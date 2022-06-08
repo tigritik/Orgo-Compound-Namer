@@ -22,6 +22,7 @@ public class Chain {
   public Chain(int length) throws IOException{
     this.length = length;
     nodes = new int[length + 1];
+    c =
   }
 
   public Chain(Collection<Integer> nodes) throws IOException{
