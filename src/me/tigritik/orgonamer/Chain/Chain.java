@@ -10,8 +10,8 @@ import java.util.Queue;
 
 import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
-
-public class Chain extends Compound{
+import me.tigritik
+public class Chain {
 
   private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta");
   private final int length;
