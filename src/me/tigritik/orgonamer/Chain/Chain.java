@@ -38,14 +38,20 @@ public class Chain extends Compound{
 
   
   public boolean branchAt(int index) {
+    System.out.println("curr " + nodes[index] + ": ");
     for (int next : getAdjList().get(nodes[index])) {
+      System.out.print(next + " ");
       if (contains(nodes, next) == false) {
+        System.out.println("\n\n");
+        //System.out.println(next + " ");
         return true;
       }
     }
+    System.out.println("\n");
     return false;
   }
 
+  
  
 
   public String toString() {
@@ -70,20 +76,42 @@ public class Chain extends Compound{
         branchPointsB.add(i);
       }
     }
-    // System.out.println("BranchPointsThis: ");
-    // for (int branchNumber : branchPointsThis){
-    //   System.out.print(branchNumber + " ");
-    // }
-    // System.out.println();
-    // System.out.println("BranchPointsB:");
-    // for (int branchNumber : branchPointsB){
-    //   System.out.print(branchNumber + " ");
-    // }
+    System.out.println("BranchPointsThis: ");
+    for (int branchNumber : branchPointsThis){
+      System.out.print(nodes[branchNumber] + " ");
+    }
+    System.out.println();
+    System.out.println("BranchPointsB:");
+    for (int branchNumber : branchPointsB){
+      System.out.print(nodes[(branchNumber)] + " ");
+    }
+    System.out.println();
+    System.out.println("Parent Chain:");
+    for (int x : nodes){
+      System.out.print(x + " ");
+    }
+    System.out.println("nodes: ");
+    for (int x : nodes){
+      System.out.print(x + " ");
+    }
+    System.out.println();
+    System.out.println("AdjList");
+    for (List<Integer> A : getAdjList()){
+      for (int I : A){
+        System.out.print(I + " ");
+      }
+      System.out.println();
+    }
+    System.out.println("\n\n");
+    
+  
     // System.out.println("DONE");
     
-    //return 0;
-    
+    if (counter >= 7){
+      return 0;
+    }
     int index = 0;
+
 
     while (index < branchPointsThis.size() && index < branchPointsB.size()) {
       if (branchPointsThis.get(index) < branchPointsB.get(index)) {
@@ -96,7 +124,7 @@ public class Chain extends Compound{
         index++;
       }
     }
-    
+
 
     if (branchPointsThis.size() == branchPointsB.size()) { // branching points are identical
       index = 0;
@@ -116,15 +144,14 @@ public class Chain extends Compound{
         }
 
         // comparetobranch
-        if (compareName(branchThis, branchB) > 0) {
+        if (compareNames(branchThis, branchB) > 0) {
           return 1;
         } 
-        else if (compareName(branchThis, branchB) < 0) {
+        else if (compareNames(branchThis, branchB) < 0) {
           return -1;
         } 
-        else {
-          index++;
-        }
+        index++;
+        
       }
       // branhc name are also identical
       return 1;
@@ -195,12 +222,7 @@ public class Chain extends Compound{
     return info;
   }
 
-  // TODO
-  public int compareName(String A, String B) {
-
-    return 0;
-
-  }
+  
 
   
 public int getChainLength() {

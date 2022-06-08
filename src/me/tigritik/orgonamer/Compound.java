@@ -30,21 +30,24 @@ public class Compound{
     private Chain finalParentChain;
     private String name;
     private int headNode = -1;
+    public static int counter = 0;
 
     public Compound() throws IOException{
       fillAdjacencyList();
+      counter++;
     }
 
     public Compound(int start, List<List<Integer> > tempAdjList){
       headNode = start;
       N = tempAdjList.size()-1;
       adjList = tempAdjList;
+      counter++;
     }
 
     public void fillAdjacencyList() throws IOException {
       Input input = new Input("Input.in");
       StringTokenizer st = input.getStringTokenizer();
-      BufferedReader bf= input.getBufferedReader();
+      BufferedReader bf = input.getBufferedReader();
       
       N = (Integer.parseInt(st.nextToken()));
       nodeList = (new Node[N + 1]);
@@ -231,7 +234,9 @@ public class Compound{
         if (contains(finalParentChain.getNodes(), next) == false){
 
           List<List<Integer> > newAdjList = createAdjList(next, (int)branchPoints.get(i));
-          Compound fromBranch = new Compound(1, newAdjList);
+          Compound fromBranch = new Compound(1, newAdjList);  
+        
+
           String nameOfBranch = fromBranch.getName(false);
           
           switch (nameOfBranch){
@@ -344,6 +349,7 @@ public class Compound{
         ArrayList<Integer> connections = new ArrayList<>();
         for (int next : adjList.get(i)){
           connections.add(next);
+          //usedIndices.add(next);
         }    
         tempAdjList.add(connections);
         usedIndices.add(i);
@@ -353,11 +359,15 @@ public class Compound{
         for (int next : adjList.get(i)){
           if (next != parent){
             connections.add(next);
+            //usedIndices.add(next);
           }
         }    
         tempAdjList.add(connections);
         usedIndices.add(i);
       }
+    }
+    if (tempAdjList.size() == 1){
+      tempAdjList.add(new ArrayList<Integer>());
     }
 
     // normalize ints
@@ -365,14 +375,19 @@ public class Compound{
     Map<Integer, Integer> normalizedIndices = new HashMap<>();
     int index = 1;
     for (int i : usedIndices){
-      normalizedIndices.put(i, index);
-      index++;
+      if (normalizedIndices.containsKey(i) == false){
+        normalizedIndices.put(i, index);
+        index++;
+      }
     }
     for (int i = 1; i < tempAdjList.size(); i++){
       for (int j = 0; j < tempAdjList.get(i).size(); j++){
         tempAdjList.get(i).set(j, normalizedIndices.get(tempAdjList.get(i).get(j)));
       }
     }
+
+
+    
 
     return tempAdjList;
   }
