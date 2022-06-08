@@ -10,13 +10,14 @@ import java.util.Queue;
 
 import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
-import me.tigritik
+
 public class Chain {
 
   private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta");
   private final int length;
   private int[] nodes; //[null, 1,3,5]
   private String name;
+  private Compound c;
 
   public Chain(int length) throws IOException{
     this.length = length;
