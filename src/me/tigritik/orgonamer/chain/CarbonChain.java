@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import me.tigritik.orgonamer.Util;
 
+import me.tigritik.orgonamer.Compound;
 
 public class CarbonChain extends Chain {
 
@@ -15,7 +16,7 @@ private String name;
 
 
   public CarbonChain(int length, boolean isPartOfParentChain) throws IOException {
-    super(length);
+    super(length, new Compound());
     numCarbons = length;
     this.isPartOfParentChain = isPartOfParentChain;
     name = getName();

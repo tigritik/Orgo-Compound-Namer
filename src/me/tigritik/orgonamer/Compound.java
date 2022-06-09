@@ -118,10 +118,12 @@ public class Compound{
           if (info[0][i] + 1 > parentChainLength) {
             possibleParentChains.clear();
             parentChainLength = info[0][i] + 1;
-            Chain L = new Chain((findPath(info[1], start, i)));
+            Chain L = new Chain((findPath(info[1], start, i)), this);
+            //System.out.println(this.getAdjList());
             possibleParentChains.add(L);
           } else if (info[0][i] + 1 == parentChainLength) {
-            Chain L = new Chain((findPath(info[1], start, i)));
+            Chain L = new Chain((findPath(info[1], start, i)), this);
+            //System.out.println(this.getAdjList());
             possibleParentChains.add(L);
           }
         }
@@ -205,7 +207,6 @@ public class Compound{
     //   System.out.println();
     // }
     // System.out.println("\n");
-    findFinalParentChain(possibleParentChains);
     // for (int i : finalParentChain.getNodes()){
     //   System.out.print(i + " ");
     // }
@@ -221,6 +222,7 @@ public class Compound{
     //combine evrything
 
     
+    findFinalParentChain(possibleParentChains);
 
 
     String name = "";
@@ -234,7 +236,10 @@ public class Compound{
         if (contains(finalParentChain.getNodes(), next) == false){
 
           List<List<Integer> > newAdjList = createAdjList(next, (int)branchPoints.get(i));
-          Compound fromBranch = new Compound(1, newAdjList);  
+          int normalizedStart = newAdjList.get(newAdjList.size()-1).get(0);
+          newAdjList.remove(newAdjList.size()-1);
+          
+          Compound fromBranch = new Compound(normalizedStart, newAdjList);  
         
 
           String nameOfBranch = fromBranch.getName(false);
@@ -373,9 +378,14 @@ public class Compound{
     // normalize ints
     Collections.sort(usedIndices);
     Map<Integer, Integer> normalizedIndices = new HashMap<>();
+    int normalizedStart = 0;
+
     int index = 1;
     for (int i : usedIndices){
       if (normalizedIndices.containsKey(i) == false){
+        if (i == start){
+          normalizedStart = index;
+        }
         normalizedIndices.put(i, index);
         index++;
       }
@@ -386,7 +396,8 @@ public class Compound{
       }
     }
 
-
+    tempAdjList.add(new ArrayList<>(Arrays.asList(normalizedStart)));
+    
     
 
     return tempAdjList;
@@ -461,6 +472,10 @@ public class Compound{
 
   public void setParentChainLength(int length){
     parentChainLength = length;
+  }
+
+  public int getCounter() {
+    return counter;
   }
   
 }
