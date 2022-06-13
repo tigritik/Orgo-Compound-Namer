@@ -31,17 +31,17 @@ public class Compound{
     private String name;
     private int headNode = -1;
     public static int counter = 0;
+    //private boolean[] isCarbon = new boolean[N+1]; 
 
     public Compound() throws IOException{
       fillAdjacencyList();
-      counter++;
     }
 
     public Compound(int start, List<List<Integer> > tempAdjList){
       headNode = start;
       N = tempAdjList.size()-1;
       adjList = tempAdjList;
-      counter++;
+      //this.isCarbon = isCarbon;
     }
 
     public void fillAdjacencyList() throws IOException {
@@ -67,6 +67,8 @@ public class Compound{
         //nodeList[a].addConnection(nodeList[b]);
         //nodeList[b].addConnection(nodeList[a]);
       }
+
+      //read in input
     
   
     }
@@ -84,9 +86,13 @@ public class Compound{
 
       // finds leaf for (1)
       int firstLeaf = findFirstLeaf();
+      System.out.println("headNode: " + headNode);
+      System.out.println("First leaf: " + firstLeaf);
+      System.out.println(adjList);
 
       // first bfs to find correct ending nodes
       int[][] info = bfs(firstLeaf, -1);
+      System.out.println(Arrays.toString(info[0]));
 
       int maxLength = 0;
       ArrayList<Integer> furthestNodes = new ArrayList<>();
@@ -140,14 +146,21 @@ public class Compound{
     Queue<Integer> q = new LinkedList<>();
 
     q.add(start);
-
+    System.out.println("NEW BFS\n\n");
     while (q.size() != 0) {
       int curr = q.poll();
+
+      System.out.println("curr: " + curr);
+      for (int s : q){
+        System.out.print(q + " ");
+      }
+      System.out.println("Queue done");
       for (int i = 0; i < adjList.get(curr).size(); i++) {
         int next = adjList.get(curr).get(i);
         if (info[0][next] == 0 && next != start && next != parent) { // next node is not visited
           info[0][next] = info[0][curr] + 1;
           info[1][next] = curr;
+          System.out.println("parent: " + curr + " child: " + next);
           q.add(next);
         }
       }
@@ -159,10 +172,12 @@ public class Compound{
 
   public int findFirstLeaf() {
     for (int i = 0; i < adjList.size(); i++) {
-      if (adjList.get(i).size() == 0) {
+      if (adjList.get(i).size() == 1  ) {
+        //System.out.println("Returned: " + i);
         return i;
       }
     }
+    //System.out.println("Returned: " + -1);
     return -1;
   }
 
@@ -191,6 +206,9 @@ public class Compound{
 
   //TODO
   public String getName(Boolean isPartOfFinalParentChain) throws IOException{
+    if (adjList.size() == 2){
+      return "methyl";
+    }
     ArrayList<Chain> possibleParentChains = findLongestChain();
     
     // for (Chain c : possibleParentChains){
@@ -200,12 +218,16 @@ public class Compound{
     //   System.out.println();
     // }
     
-    // for (List<Integer> A : adjList){
+
+    // for (int i = 0; i < adjList.size(); i++){
+    //   List<Integer> A = adjList.get(i);
+    //   System.out.print(i + ": "); 
     //   for (int I : A){
     //     System.out.print(I + " ");
     //   }
-    //   System.out.println();
+    //   System.out.println(" size: " + A.size());
     // }
+    // System.out.println("Done");
     // System.out.println("\n");
     // for (int i : finalParentChain.getNodes()){
     //   System.out.print(i + " ");
