@@ -19,17 +19,17 @@ public class Chain {
   private String name;
   private Compound parentCompound;
 
-  public Chain(int length, Compound c) throws IOException{
+  public Chain(int length, Compound c){
     this.length = length;
     nodes = new int[length + 1];
     parentCompound = c;
   }
 
-  public Chain(Collection<Integer> nodes, Compound c) throws IOException{
+  public Chain(Collection<Integer> nodes, Compound c) {
     this(nodes.size(), nodes, c);
   }
 
-  public Chain(int length, Collection<Integer> nodes, Compound c)  throws IOException{
+  public Chain(int length, Collection<Integer> nodes, Compound c) {
     this(length, c);
     int i = 1;
     for (int n : nodes) {
@@ -69,7 +69,7 @@ public class Chain {
     return "prefixes-" + Util.PREFIX[length] + "ane";
   }
 
-  public int compareTo(Chain b) throws IOException{
+  public int compareTo(Chain b){
 
     ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains points in which it branches off
     ArrayList<Integer> branchPointsB = new ArrayList<Integer>();

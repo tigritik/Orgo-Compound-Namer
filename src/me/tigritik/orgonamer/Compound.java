@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-import me.tigritik.orgonamer.chain.CarbonChain;
 import me.tigritik.orgonamer.chain.Chain;
 import me.tigritik.orgonamer.nodes.CarbonNode;
 import me.tigritik.orgonamer.nodes.FunctionalNode;
@@ -73,7 +72,7 @@ public class Compound{
   
     }
 
-    public ArrayList<Chain> findLongestChain() throws IOException{
+    public ArrayList<Chain> findLongestChain(){
         
     /*
      * Idea is as follows:
@@ -193,7 +192,7 @@ public class Compound{
     return path;
   } 
 
-  public void findFinalParentChain(ArrayList<Chain> possibleParentChainList)  throws IOException{
+  public void findFinalParentChain(ArrayList<Chain> possibleParentChainList) {
     Chain currentBest = possibleParentChainList.get(0);
 
     for (int i = 1; i < possibleParentChainList.size(); i++){
@@ -205,7 +204,7 @@ public class Compound{
   }
 
   //TODO
-  public String getName(Boolean isPartOfFinalParentChain) throws IOException{
+  public String getName(Boolean isPartOfFinalParentChain) {
     if (adjList.size() == 2){
       return "methyl";
     }
@@ -323,9 +322,14 @@ public class Compound{
       n++;
     }
 
-    CarbonChain c = new CarbonChain(parentChainLength, isPartOfFinalParentChain);
-    name += c.getName();
-    
+
+    if (isPartOfFinalParentChain == true){
+      name += Util.PREFIX[parentChainLength] + "ane";
+    }    
+    else{
+      name += Util.PREFIX[parentChainLength] + "yl";
+
+    }
 
     this.name = name;
     return name;
