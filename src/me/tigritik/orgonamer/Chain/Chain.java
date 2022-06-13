@@ -11,7 +11,7 @@ import java.util.Queue;
 import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
 
-public class Chain {
+public class Chain extends Compound implements Comparable<Chain> {
 
   private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta");
   private final int length;
@@ -31,6 +31,7 @@ public class Chain {
 
   public Chain(int length, Collection<Integer> nodes, Compound c) {
     this(length, c);
+
     int i = 1;
     for (int n : nodes) {
       this.nodes[i] = n;
@@ -70,6 +71,7 @@ public class Chain {
   }
 
   public int compareTo(Chain b){
+
 
     ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains points in which it branches off
     ArrayList<Integer> branchPointsB = new ArrayList<Integer>();

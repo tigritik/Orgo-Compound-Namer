@@ -2,16 +2,7 @@ package me.tigritik.orgonamer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import me.tigritik.orgonamer.chain.Chain;
 import me.tigritik.orgonamer.nodes.CarbonNode;
@@ -32,7 +23,7 @@ public class Compound{
     public static int counter = 0;
     //private boolean[] isCarbon = new boolean[N+1]; 
 
-    public Compound() throws IOException{
+    public Compound() throws IOException {
       fillAdjacencyList();
     }
 
@@ -73,6 +64,7 @@ public class Compound{
     }
 
     public ArrayList<Chain> findLongestChain(){
+
         
     /*
      * Idea is as follows:
@@ -130,7 +122,10 @@ public class Compound{
             Chain L = new Chain((findPath(info[1], start, i)), this);
             //System.out.println(this.getAdjList());
             possibleParentChains.add(L);
+
           }
+        } catch (IOException e) {
+          e.printStackTrace();
         }
       }
 
@@ -200,7 +195,10 @@ public class Compound{
         currentBest = possibleParentChainList.get(i);
       }
     }
-    finalParentChain = currentBest; 
+    finalParentChain = currentBest;
+
+    /*PriorityQueue<Chain> pq = new PriorityQueue<>(possibleParentChainList);
+    finalParentChain = pq.remove();*/
   }
 
   //TODO
@@ -208,6 +206,7 @@ public class Compound{
     if (adjList.size() == 2){
       return "methyl";
     }
+
     ArrayList<Chain> possibleParentChains = findLongestChain();
     
     // for (Chain c : possibleParentChains){
@@ -331,8 +330,9 @@ public class Compound{
 
     }
 
-    this.name = name;
-    return name;
+
+      this.name = name;
+      return name;
   }
   
   //returns -1 if String a is alphabetically first than String b, and +1 if String is alphabetically first. returns 0 if the strings are equal,.
