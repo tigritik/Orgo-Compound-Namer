@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
 
-import me.tigritik.orgonamer.chain.CarbonChain;
 import me.tigritik.orgonamer.chain.Chain;
 import me.tigritik.orgonamer.nodes.CarbonNode;
 import me.tigritik.orgonamer.nodes.FunctionalNode;
@@ -21,6 +20,8 @@ public class Compound{
     private Chain finalParentChain;
     private String name;
     private int headNode = -1;
+    public static int counter = 0;
+    //private boolean[] isCarbon = new boolean[N+1]; 
 
     public Compound() throws IOException {
       fillAdjacencyList();
@@ -30,12 +31,13 @@ public class Compound{
       headNode = start;
       N = tempAdjList.size()-1;
       adjList = tempAdjList;
+      //this.isCarbon = isCarbon;
     }
 
     public void fillAdjacencyList() throws IOException {
       Input input = new Input("Input.in");
       StringTokenizer st = input.getStringTokenizer();
-      BufferedReader bf= input.getBufferedReader();
+      BufferedReader bf = input.getBufferedReader();
       
       N = (Integer.parseInt(st.nextToken()));
       nodeList = (new Node[N + 1]);
@@ -55,11 +57,14 @@ public class Compound{
         //nodeList[a].addConnection(nodeList[b]);
         //nodeList[b].addConnection(nodeList[a]);
       }
+
+      //read in input
     
   
     }
 
-    public ArrayList<Chain> findLongestChain() {
+    public ArrayList<Chain> findLongestChain(){
+
         
     /*
      * Idea is as follows:
@@ -72,9 +77,13 @@ public class Compound{
 
       // finds leaf for (1)
       int firstLeaf = findFirstLeaf();
+      System.out.println("headNode: " + headNode);
+      System.out.println("First leaf: " + firstLeaf);
+      System.out.println(adjList);
 
       // first bfs to find correct ending nodes
       int[][] info = bfs(firstLeaf, -1);
+      System.out.println(Arrays.toString(info[0]));
 
       int maxLength = 0;
       ArrayList<Integer> furthestNodes = new ArrayList<>();
@@ -102,17 +111,18 @@ public class Compound{
       // runs a bfs from all ending nodes
       for (int start : furthestNodes) {
         info = bfs(start, -1); // info[0] stores distances, info[1] stores parents
-        try {
-          for (int i = 1; i < info[0].length; i++) {
-            if (info[0][i] + 1 > parentChainLength) {
-              possibleParentChains.clear();
-              parentChainLength = info[0][i] + 1;
-              Chain L = new Chain((findPath(info[1], start, i)));
-              possibleParentChains.add(L);
-            } else if (info[0][i] + 1 == parentChainLength) {
-              Chain L = new Chain((findPath(info[1], start, i)));
-              possibleParentChains.add(L);
-            }
+        for (int i = 1; i < info[0].length; i++) {
+          if (info[0][i] + 1 > parentChainLength) {
+            possibleParentChains.clear();
+            parentChainLength = info[0][i] + 1;
+            Chain L = new Chain((findPath(info[1], start, i)), this);
+            //System.out.println(this.getAdjList());
+            possibleParentChains.add(L);
+          } else if (info[0][i] + 1 == parentChainLength) {
+            Chain L = new Chain((findPath(info[1], start, i)), this);
+            //System.out.println(this.getAdjList());
+            possibleParentChains.add(L);
+
           }
         } catch (IOException e) {
           e.printStackTrace();
@@ -130,14 +140,21 @@ public class Compound{
     Queue<Integer> q = new LinkedList<>();
 
     q.add(start);
-
+    System.out.println("NEW BFS\n\n");
     while (q.size() != 0) {
       int curr = q.poll();
+
+      System.out.println("curr: " + curr);
+      for (int s : q){
+        System.out.print(q + " ");
+      }
+      System.out.println("Queue done");
       for (int i = 0; i < adjList.get(curr).size(); i++) {
         int next = adjList.get(curr).get(i);
         if (info[0][next] == 0 && next != start && next != parent) { // next node is not visited
           info[0][next] = info[0][curr] + 1;
           info[1][next] = curr;
+          System.out.println("parent: " + curr + " child: " + next);
           q.add(next);
         }
       }
@@ -149,10 +166,12 @@ public class Compound{
 
   public int findFirstLeaf() {
     for (int i = 0; i < adjList.size(); i++) {
-      if (adjList.get(i).size() == 0) {
+      if (adjList.get(i).size() == 1  ) {
+        //System.out.println("Returned: " + i);
         return i;
       }
     }
+    //System.out.println("Returned: " + -1);
     return -1;
   }
 
@@ -184,6 +203,10 @@ public class Compound{
 
   //TODO
   public String getName(Boolean isPartOfFinalParentChain) {
+    if (adjList.size() == 2){
+      return "methyl";
+    }
+
     ArrayList<Chain> possibleParentChains = findLongestChain();
     
     // for (Chain c : possibleParentChains){
@@ -193,14 +216,17 @@ public class Compound{
     //   System.out.println();
     // }
     
-    // for (List<Integer> A : adjList){
+
+    // for (int i = 0; i < adjList.size(); i++){
+    //   List<Integer> A = adjList.get(i);
+    //   System.out.print(i + ": "); 
     //   for (int I : A){
     //     System.out.print(I + " ");
     //   }
-    //   System.out.println();
+    //   System.out.println(" size: " + A.size());
     // }
+    // System.out.println("Done");
     // System.out.println("\n");
-    findFinalParentChain(possibleParentChains);
     // for (int i : finalParentChain.getNodes()){
     //   System.out.print(i + " ");
     // }
@@ -216,6 +242,7 @@ public class Compound{
     //combine evrything
 
     
+    findFinalParentChain(possibleParentChains);
 
 
     String name = "";
@@ -229,7 +256,12 @@ public class Compound{
         if (contains(finalParentChain.getNodes(), next) == false){
 
           List<List<Integer> > newAdjList = createAdjList(next, (int)branchPoints.get(i));
-          Compound fromBranch = new Compound(1, newAdjList);
+          int normalizedStart = newAdjList.get(newAdjList.size()-1).get(0);
+          newAdjList.remove(newAdjList.size()-1);
+          
+          Compound fromBranch = new Compound(normalizedStart, newAdjList);  
+        
+
           String nameOfBranch = fromBranch.getName(false);
           
           switch (nameOfBranch){
@@ -289,19 +321,18 @@ public class Compound{
       n++;
     }
 
-    try {
-      CarbonChain c = new CarbonChain(parentChainLength, isPartOfFinalParentChain);
 
-      name += c.getName();
-    
+    if (isPartOfFinalParentChain == true){
+      name += Util.PREFIX[parentChainLength] + "ane";
+    }    
+    else{
+      name += Util.PREFIX[parentChainLength] + "yl";
+
+    }
+
 
       this.name = name;
       return name;
-    }
-    catch (IOException e) {
-      e.printStackTrace();
-      return "";
-    }
   }
   
   //returns -1 if String a is alphabetically first than String b, and +1 if String is alphabetically first. returns 0 if the strings are equal,.
@@ -349,6 +380,7 @@ public class Compound{
         ArrayList<Integer> connections = new ArrayList<>();
         for (int next : adjList.get(i)){
           connections.add(next);
+          //usedIndices.add(next);
         }    
         tempAdjList.add(connections);
         usedIndices.add(i);
@@ -358,26 +390,41 @@ public class Compound{
         for (int next : adjList.get(i)){
           if (next != parent){
             connections.add(next);
+            //usedIndices.add(next);
           }
         }    
         tempAdjList.add(connections);
         usedIndices.add(i);
       }
     }
+    if (tempAdjList.size() == 1){
+      tempAdjList.add(new ArrayList<Integer>());
+    }
 
     // normalize ints
     Collections.sort(usedIndices);
     Map<Integer, Integer> normalizedIndices = new HashMap<>();
+    int normalizedStart = 0;
+
     int index = 1;
     for (int i : usedIndices){
-      normalizedIndices.put(i, index);
-      index++;
+      if (normalizedIndices.containsKey(i) == false){
+        if (i == start){
+          normalizedStart = index;
+        }
+        normalizedIndices.put(i, index);
+        index++;
+      }
     }
     for (int i = 1; i < tempAdjList.size(); i++){
       for (int j = 0; j < tempAdjList.get(i).size(); j++){
         tempAdjList.get(i).set(j, normalizedIndices.get(tempAdjList.get(i).get(j)));
       }
     }
+
+    tempAdjList.add(new ArrayList<>(Arrays.asList(normalizedStart)));
+    
+    
 
     return tempAdjList;
   }
@@ -451,6 +498,10 @@ public class Compound{
 
   public void setParentChainLength(int length){
     parentChainLength = length;
+  }
+
+  public int getCounter() {
+    return counter;
   }
   
 }

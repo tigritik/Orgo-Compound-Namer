@@ -17,18 +17,21 @@ public class Chain extends Compound implements Comparable<Chain> {
   private final int length;
   private int[] nodes; //[null, 1,3,5]
   private String name;
+  private Compound parentCompound;
 
-  public Chain(int length) throws IOException {
+  public Chain(int length, Compound c){
     this.length = length;
     nodes = new int[length + 1];
+    parentCompound = c;
   }
 
-  public Chain(Collection<Integer> nodes) throws IOException {
-    this(nodes.size(), nodes);
+  public Chain(Collection<Integer> nodes, Compound c) {
+    this(nodes.size(), nodes, c);
   }
 
-  public Chain(int length, Collection<Integer> nodes) throws IOException {
-    this(length);
+  public Chain(int length, Collection<Integer> nodes, Compound c) {
+    this(length, c);
+
     int i = 1;
     for (int n : nodes) {
       this.nodes[i] = n;
@@ -36,23 +39,39 @@ public class Chain extends Compound implements Comparable<Chain> {
     }
   }
 
-  
-  public boolean branchAt(int index) {
-    for (int next : getAdjList().get(nodes[index])) {
-      if (contains(nodes, next) == false) {
+  public boolean contains(int[] arr, int x){
+    for (int i : arr){
+      if (i == x){
         return true;
       }
     }
     return false;
   }
 
+  
+  public boolean branchAt(int index) {
+    //System.out.println("curr " + nodes[index] + ": ");
+    for (int next : parentCompound.getAdjList().get(nodes[index])) {
+      //System.out.print(next + " ");
+      if (contains(nodes, next) == false) {
+        //System.out.println("\n\n");
+        //System.out.println(next + " ");
+        return true;
+      }
+    }
+    //System.out.println("\n");
+    return false;
+  }
+
+  
  
 
   public String toString() {
     return "prefixes-" + Util.PREFIX[length] + "ane";
   }
 
-  public int compareTo(Chain b) {
+  public int compareTo(Chain b){
+
 
     ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains points in which it branches off
     ArrayList<Integer> branchPointsB = new ArrayList<Integer>();
@@ -72,18 +91,41 @@ public class Chain extends Compound implements Comparable<Chain> {
     }
     // System.out.println("BranchPointsThis: ");
     // for (int branchNumber : branchPointsThis){
-    //   System.out.print(branchNumber + " ");
+    //   System.out.print(nodes[branchNumber] + " ");
     // }
     // System.out.println();
     // System.out.println("BranchPointsB:");
     // for (int branchNumber : branchPointsB){
-    //   System.out.print(branchNumber + " ");
+    //   System.out.print(nodes[(branchNumber)] + " ");
     // }
+    // System.out.println();
+    // System.out.println("Parent Chain:");
+    // for (int x : nodes){
+    //   System.out.print(x + " ");
+    // }
+    // System.out.println("nodes: ");
+    // for (int x : nodes){
+    //   System.out.print(x + " ");
+    // }
+    // System.out.println();
+    // System.out.println("AdjList");
+    // for (List<Integer> A : parentCompound.getAdjList()){
+    //   for (int I : A){
+    //     System.out.print(I + " ");
+    //   }
+    //   System.out.println();
+    // }
+    // System.out.println("\n\n");
+
+    // System.out.println();
+  
     // System.out.println("DONE");
     
-    //return 0;
-    
+    // if (parentCompound.getCounter() >= 7){
+    //   return 0;
+    // }
     int index = 0;
+
 
     while (index < branchPointsThis.size() && index < branchPointsB.size()) {
       if (branchPointsThis.get(index) < branchPointsB.get(index)) {
@@ -96,35 +138,40 @@ public class Chain extends Compound implements Comparable<Chain> {
         index++;
       }
     }
-    
+
 
     if (branchPointsThis.size() == branchPointsB.size()) { // branching points are identical
       index = 0;
       String branchThis = "", branchB = "";
       while (index < branchPointsThis.size()) {
-        for (int next : getAdjList().get(nodes[branchPointsThis.get(index)])) {
+        for (int next : parentCompound.getAdjList().get(nodes[branchPointsThis.get(index)])) {
           if (contains(nodes, next) == false) {
-            Compound branchThisCompound = new Compound(1, createAdjList(next, nodes[branchPointsThis.get(index)]));
+            List<List<Integer> > tempAdjList = parentCompound.createAdjList(next, nodes[branchPointsThis.get(index)]);
+            int normalizedStart = tempAdjList.get(tempAdjList.size()-1).get(0);
+            tempAdjList.remove(tempAdjList.size()-1);
+            Compound branchThisCompound = new Compound(normalizedStart, tempAdjList);
             branchThis = branchThisCompound.getName(false);
           }
         }
-        for (int next : b.getAdjList().get(b.getNodes()[branchPointsB.get(index)])) {
+        for (int next : b.getParentCompound().getAdjList().get(b.getNodes()[branchPointsB.get(index)])) {
           if (contains(nodes, next) == false) {
-            Compound branchBCompound = new Compound(1, createAdjList(next, b.getNodes()[branchPointsB.get(index)]));
+            List<List<Integer> > tempAdjList = b.getParentCompound().createAdjList(next, b.getNodes()[branchPointsB.get(index)]);
+            int normalizedStart = tempAdjList.get(tempAdjList.size()-1).get(0);
+            tempAdjList.remove(tempAdjList.size()-1);
+            Compound branchBCompound = new Compound(normalizedStart, tempAdjList);
             branchB = branchBCompound.getName(false);
           }
         }
 
         // comparetobranch
-        if (compareName(branchThis, branchB) > 0) {
+        if (compareNames(branchThis, branchB) > 0) {
           return 1;
         } 
-        else if (compareName(branchThis, branchB) < 0) {
+        else if (compareNames(branchThis, branchB) < 0) {
           return -1;
         } 
-        else {
-          index++;
-        }
+        index++;
+        
       }
       // branhc name are also identical
       return 1;
@@ -140,6 +187,32 @@ public class Chain extends Compound implements Comparable<Chain> {
     
   }
 
+  public int compareNames(String a, String b) {
+
+    if(a.equals(b)) {
+      return 0;
+    }
+
+    for (int i = 0; i < IGNORABLES.size(); i++) {
+      String s = IGNORABLES.get(i);
+      while (a.contains(s)) {
+        int index = a.indexOf(s);
+        a = a.substring(0, index) + a.substring(s.length() + index);
+      }
+    }
+
+    for (int i = 0; i < IGNORABLES.size(); i++) {
+      String s = IGNORABLES.get(i);
+      while (b.contains(s)) {
+        int index = b.indexOf(s);
+        b = b.substring(0, index) + b.substring(s.length() + index);
+      }
+    }
+
+    return a.compareTo(b);
+
+  }
+
   public ArrayList<Integer> returnBranchIndices() {
     ArrayList<Integer> indices = new ArrayList<>();
 
@@ -153,16 +226,16 @@ public class Chain extends Compound implements Comparable<Chain> {
   }
 
 
-    
+  /*  
   public ArrayList<Chain> findLongestChain(int start, int parent) throws IOException {
 
     ArrayList<Chain> possibleParentChains = new ArrayList<>();
 
     int[][] info = bfs(start, parent); // info[0] stores distances, info[1] stores parents
     for (int i = 1; i < info[0].length; i++) {
-      if (info[0][i] + 1 > getParentChainLength()) {
+      if (info[0][i] + 1 > parentCompound.getParentChainLength()) {
         possibleParentChains.clear();
-        setParentChainLength(info[0][i] + 1);
+        parentCompound.setParentChainLength(info[0][i] + 1);
         Chain L = new Chain((findPath(info[1], start, i)));
         possibleParentChains.add(L);
       } else if (info[0][i] + 1 == getParentChainLength()) {
@@ -172,17 +245,18 @@ public class Chain extends Compound implements Comparable<Chain> {
     }
     return possibleParentChains;
   }
+  */
 
   public int[][] bfs(int start, int parent) {
-    int[][] info = new int[2][getN() + 1]; // info[0] stores distances, info[1] stores parents
+    int[][] info = new int[2][parentCompound.getN() + 1]; // info[0] stores distances, info[1] stores parents
     Queue<Integer> q = new LinkedList<>();
 
     q.add(start);
 
     while (q.size() != 0) {
       int curr = q.poll();
-      for (int i = 0; i < getAdjList().get(curr).size(); i++) {
-        int next = getAdjList().get(curr).get(i);
+      for (int i = 0; i < parentCompound.getAdjList().get(curr).size(); i++) {
+        int next = parentCompound.getAdjList().get(curr).get(i);
         if (info[0][next] == 0 && next != start && next != parent) { // next node is not visited
           info[0][next] = info[0][curr] + 1;
           info[1][next] = curr;
@@ -195,13 +269,11 @@ public class Chain extends Compound implements Comparable<Chain> {
     return info;
   }
 
-  // TODO
-  public int compareName(String A, String B) {
+  
 
-    return 0;
-
+  public Compound getParentCompound() {
+    return parentCompound;
   }
-
   
 public int getChainLength() {
     return length;
