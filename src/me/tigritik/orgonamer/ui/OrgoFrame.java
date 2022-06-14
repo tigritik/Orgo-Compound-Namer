@@ -19,14 +19,14 @@ public class OrgoFrame extends JFrame {
 
     private final List<Pair<Integer, Integer>> nodeCoordinateList = new ArrayList<>();
     private final List<Pair<Integer, Integer>> connectionList = new ArrayList<>();
-    private final ButtonGroup elementSelector = new ButtonGroup();
+    //private final ButtonGroup elementSelector = new ButtonGroup();
     private static final int RADIUS = 5;
 
     private int selectedNode = -1;
     private int nodeCount = 0;
 
-    private final JRadioButton carbon = new JRadioButton("Carbon");
-    private final JRadioButton bond1 = new JRadioButton("Single Bond");
+    //private final JRadioButton carbon = new JRadioButton("Carbon");
+    //private final JRadioButton bond1 = new JRadioButton("Single Bond");
 
     public OrgoFrame() {
         super("OrgoNamer");
@@ -41,10 +41,10 @@ public class OrgoFrame extends JFrame {
         addKeyListener(new KeyboardListener());
         setVisible(true);
         requestFocus();
-        elementSelector.add(carbon);
-        elementSelector.add(bond1);
-        add(carbon);
-        add(bond1);
+        // elementSelector.add(carbon);
+        // elementSelector.add(bond1);
+        // add(carbon);
+        // add(bond1);
 
     }
 

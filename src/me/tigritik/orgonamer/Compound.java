@@ -77,13 +77,13 @@ public class Compound{
 
       // finds leaf for (1)
       int firstLeaf = findFirstLeaf();
-      System.out.println("headNode: " + headNode);
-      System.out.println("First leaf: " + firstLeaf);
-      System.out.println(adjList);
+      // System.out.println("headNode: " + headNode);
+      // System.out.println("First leaf: " + firstLeaf);
+      // System.out.println(adjList);
 
       // first bfs to find correct ending nodes
       int[][] info = bfs(firstLeaf, -1);
-      System.out.println(Arrays.toString(info[0]));
+      // System.out.println(Arrays.toString(info[0]));
 
       int maxLength = 0;
       ArrayList<Integer> furthestNodes = new ArrayList<>();
@@ -124,9 +124,7 @@ public class Compound{
             possibleParentChains.add(L);
 
           }
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        } 
       }
 
       return possibleParentChains;
@@ -140,21 +138,21 @@ public class Compound{
     Queue<Integer> q = new LinkedList<>();
 
     q.add(start);
-    System.out.println("NEW BFS\n\n");
+    //System.out.println("NEW BFS\n\n");
     while (q.size() != 0) {
       int curr = q.poll();
 
-      System.out.println("curr: " + curr);
-      for (int s : q){
-        System.out.print(q + " ");
-      }
-      System.out.println("Queue done");
+      // System.out.println("curr: " + curr);
+      // for (int s : q){
+      //   System.out.print(q + " ");
+      // }
+     // System.out.println("Queue done");
       for (int i = 0; i < adjList.get(curr).size(); i++) {
         int next = adjList.get(curr).get(i);
         if (info[0][next] == 0 && next != start && next != parent) { // next node is not visited
           info[0][next] = info[0][curr] + 1;
           info[1][next] = curr;
-          System.out.println("parent: " + curr + " child: " + next);
+          //System.out.println("parent: " + curr + " child: " + next);
           q.add(next);
         }
       }

@@ -11,7 +11,7 @@ import java.util.Queue;
 import me.tigritik.orgonamer.Compound;
 import me.tigritik.orgonamer.Util;
 
-public class Chain extends Compound implements Comparable<Chain> {
+public class Chain implements Comparable<Chain> {
 
   private final List<String> IGNORABLES = Arrays.asList("(",")",",","-","di", "tri", "tetra", "penta", "hexa", "hepta");
   private final int length;
