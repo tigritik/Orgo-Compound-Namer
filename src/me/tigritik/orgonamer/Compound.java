@@ -2,7 +2,10 @@ package me.tigritik.orgonamer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.FileSystemNotFoundException;
 import java.util.*;
+
+import javax.naming.directory.AttributeInUseException;
 
 import me.tigritik.orgonamer.chain.Chain;
 import me.tigritik.orgonamer.nodes.CarbonNode;
@@ -21,18 +24,69 @@ public class Compound{
     private String name;
     private int headNode = -1;
     public static int counter = 0;
-    //private boolean[] isCarbon = new boolean[N+1]; 
-
+    private int[] nodeType;
+    // 0: carbon, 1: N3(azido), 2: Br(bromo), 3: Cl(Chloro), 4: F(fluoro), 5: I(iodo), 6: NO2(nitro)
+    
+    // 1 2
+    // 2 3
+    // 3 4
+    // 
+    // FUNCTIONAL
+    // 4 
+    // 5 br
+ 
+    
     public Compound() throws IOException {
       fillAdjacencyList();
     }
 
-    public Compound(int start, List<List<Integer> > tempAdjList){
+    public Compound(int start, List<List<Integer> > tempAdjList, int[] nodeTypes){
       headNode = start;
       N = tempAdjList.size()-1;
       adjList = tempAdjList;
-      //this.isCarbon = isCarbon;
+      nodeType = nodeTypes;
     }
+
+    //returns a list of chains with size N (1<=N<=possibleParentChains.size())
+    // public List<Chain> getLongestChainIncludingFunctionals() {
+      
+    //     // Map<String, Integer> priorities = Map.ofEntries(
+    //     //     entry("Azido",1),
+    //     //     entry("Bromo",2),
+    //     //     entry("Chloro",3),
+    //     //     entry("Fluoro")
+
+    //     // )
+
+        
+    //     List<Chain> priorityList = new ArrayList<>();   
+    //     List<Integer> carbonsIndex = new ArrayList<>();
+    //     List<Integer> functionalIndex = new ArrayList<>();
+        
+    //     //create all possible chains of connections, return the chain that has the indexWithHighestPriority in it, if there are multiple, compare and return
+    //     for(int i = 1; i<=adjList.size(); i++) {
+    //       for(int index : adjList.get(i)) {
+    //           if(nodeType[index]==0 && !(carbonsIndex.contains(index))) {
+    //             carbonsIndex.add(index);
+    //           } else if (nodeType[index]>6){
+    //             functionalIndex.add(index);
+    //           }
+    //       }
+    //     }
+
+    //     if(functionalIndex.size()==0) {
+    //       return findLongestChain();
+    //     }
+    //     Collections.sort(functionalIndex); 
+    //     int indexWithHighestPriority = functionalIndex.get(functionalIndex.size()-1); 
+
+    //     return priorityList;
+        
+    // }
+
+    // public int getNumCarbonConnections(int index) {
+      
+    // }
 
     public void fillAdjacencyList() throws IOException {
       Input input = new Input("Input.in");
@@ -40,28 +94,58 @@ public class Compound{
       BufferedReader bf = input.getBufferedReader();
       
       N = (Integer.parseInt(st.nextToken()));
+      nodeType = new int[N+1];
       nodeList = (new Node[N + 1]);
   
       for (int i = 0; i < N + 1; i++) {
         adjList.add(new ArrayList<>());
-        nodeList[i] = new CarbonNode(i);
+        
       }
-  
+      
+      
       while (bf.ready()) {
         st = new StringTokenizer(bf.readLine());
-        int a = Integer.parseInt(st.nextToken()), b = Integer.parseInt(st.nextToken());
+
+        String temp1 = st.nextToken();
+        String temp2 = st.nextToken();
+        if (temp1.equals("FUNCTIONAL")){
+          break;
+        }
+
+        int a = Integer.parseInt(temp1), b = Integer.parseInt(temp2);
   
         adjList.get(a).add(b);
         adjList.get(b).add(a);
-      
+  
         //nodeList[a].addConnection(nodeList[b]);
         //nodeList[b].addConnection(nodeList[a]);
       }
+      
+      Map<String, Integer> typeToInt = new HashMap<String, Integer>();
+      typeToInt.put("N3", 1);
+      typeToInt.put("Br", 2);
+      typeToInt.put("Cl", 3);
+      typeToInt.put("F", 4);
+      typeToInt.put("I", 5);
+      typeToInt.put("NO2", 6);
+
+      while(bf.ready()) {
+        StringTokenizer stNew = new StringTokenizer(bf.readLine());
+        int c = Integer.parseInt(stNew.nextToken());
+        String b = stNew.nextToken();
+        
+        nodeType[c] = typeToInt.get(b);
+        
+      
+  
+      
 
       //read in input
-    
+      }
   
     }
+
+
 
     public ArrayList<Chain> findLongestChain(){
 
@@ -77,13 +161,10 @@ public class Compound{
 
       // finds leaf for (1)
       int firstLeaf = findFirstLeaf();
-      // System.out.println("headNode: " + headNode);
-      // System.out.println("First leaf: " + firstLeaf);
-      // System.out.println(adjList);
+      
 
-      // first bfs to find correct ending nodes
+      
       int[][] info = bfs(firstLeaf, -1);
-      // System.out.println(Arrays.toString(info[0]));
 
       int maxLength = 0;
       ArrayList<Integer> furthestNodes = new ArrayList<>();
@@ -105,6 +186,7 @@ public class Compound{
         furthestNodes.add(headNode);
       }
 
+
       // stores all possible start and end nodes
       ArrayList<Chain> possibleParentChains = new ArrayList<>();
 
@@ -116,12 +198,19 @@ public class Compound{
             possibleParentChains.clear();
             parentChainLength = info[0][i] + 1;
             Chain L = new Chain((findPath(info[1], start, i)), this);
+            Chain L1 = new Chain((findReversePath(info[1], start, i)), this);
+
             //System.out.println(this.getAdjList());
             possibleParentChains.add(L);
-          } else if (info[0][i] + 1 == parentChainLength) {
+            possibleParentChains.add(L1);
+          } 
+          else if (info[0][i] + 1 == parentChainLength) {
             Chain L = new Chain((findPath(info[1], start, i)), this);
+            Chain L1 = new Chain((findReversePath(info[1], start, i)), this);
+
             //System.out.println(this.getAdjList());
             possibleParentChains.add(L);
+            possibleParentChains.add(L1);
 
           }
         } 
@@ -149,10 +238,9 @@ public class Compound{
      // System.out.println("Queue done");
       for (int i = 0; i < adjList.get(curr).size(); i++) {
         int next = adjList.get(curr).get(i);
-        if (info[0][next] == 0 && next != start && next != parent) { // next node is not visited
+        if (info[0][next] == 0 && next != start && next != parent && nodeType[next] == 0) { // next node is not visited
           info[0][next] = info[0][curr] + 1;
           info[1][next] = curr;
-          //System.out.println("parent: " + curr + " child: " + next);
           q.add(next);
         }
       }
@@ -163,8 +251,8 @@ public class Compound{
   }
 
   public int findFirstLeaf() {
-    for (int i = 0; i < adjList.size(); i++) {
-      if (adjList.get(i).size() == 1  ) {
+    for (int i = 1; i < adjList.size(); i++) {
+      if (adjList.get(i).size() == 1  && nodeType[i] == 0) {
         //System.out.println("Returned: " + i);
         return i;
       }
@@ -185,7 +273,19 @@ public class Compound{
     return path;
   } 
 
+  public ArrayList<Integer> findReversePath(int[] parents, int start, int end){
+    ArrayList<Integer> path = new ArrayList<>();
+    int curr = end;
+    while (curr != 0){
+      path.add(curr);
+      curr = parents[curr];
+    }
+    return path;
+  } 
+
+
   public void findFinalParentChain(ArrayList<Chain> possibleParentChainList) {
+    
     Chain currentBest = possibleParentChainList.get(0);
 
     for (int i = 1; i < possibleParentChainList.size(); i++){
@@ -201,37 +301,27 @@ public class Compound{
 
   //TODO
   public String getName(Boolean isPartOfFinalParentChain) {
-    if (adjList.size() == 2){
-      return "methyl";
-    }
 
+    if (adjList.size() == 2){
+      switch(nodeType[2]){
+        case 0: 
+          return "methyl";
+        case 1: 
+          return "azido";
+        case 2:
+          return "bromo";
+        case 3: 
+          return "chloro";
+        case 4:
+          return "fluoro";
+        case 5:
+          return "iodo";
+        case 6:
+          return "nitro";
+      }
+    }
     ArrayList<Chain> possibleParentChains = findLongestChain();
     
-    // for (Chain c : possibleParentChains){
-    //   for (int i : c.getNodes()){
-    //     System.out.print(i + " ");
-    //   }
-    //   System.out.println();
-    // }
-    
-
-    // for (int i = 0; i < adjList.size(); i++){
-    //   List<Integer> A = adjList.get(i);
-    //   System.out.print(i + ": "); 
-    //   for (int I : A){
-    //     System.out.print(I + " ");
-    //   }
-    //   System.out.println(" size: " + A.size());
-    // }
-    // System.out.println("Done");
-    // System.out.println("\n");
-    // for (int i : finalParentChain.getNodes()){
-    //   System.out.print(i + " ");
-    // }
-    // System.out.println();
-    // System.out.println("HeadNode: " + headNode);
-
-    //return "";
 
     //go thru final parent chain in order
     //at branch points, store indices + call nameBranch
@@ -254,14 +344,23 @@ public class Compound{
         if (contains(finalParentChain.getNodes(), next) == false){
 
           List<List<Integer> > newAdjList = createAdjList(next, (int)branchPoints.get(i));
-          int normalizedStart = newAdjList.get(newAdjList.size()-1).get(0);
+          List<Integer> usedIndices = newAdjList.get(newAdjList.size()-1);
           newAdjList.remove(newAdjList.size()-1);
           
-          Compound fromBranch = new Compound(normalizedStart, newAdjList);  
+          int[] newNodeTypes = new int[newAdjList.size()];
+          for (int newNode = 1; newNode < newAdjList.size()-1; newNode++){
+            newNodeTypes[newNode] = nodeType[usedIndices.get(newNode-1)];
+          }
+
+          int normalizedStart = newAdjList.get(newAdjList.size()-1).get(0);
+          newAdjList.remove(newAdjList.size()-1);
+
+          
+          Compound fromBranch = new Compound(normalizedStart, newAdjList, newNodeTypes);  
         
 
           String nameOfBranch = fromBranch.getName(false);
-          
+  
           switch (nameOfBranch){
             case "1-methylethyl": 
               nameOfBranch = "isopropyl";
@@ -372,6 +471,7 @@ public class Compound{
     
     int[][] info = bfs(start, parent);
 
+   
     tempAdjList.add(new ArrayList<Integer>());
     for (int i = 1; i <= N; i++){
       if (info[0][i] != 0){
@@ -395,8 +495,9 @@ public class Compound{
         usedIndices.add(i);
       }
     }
-    if (tempAdjList.size() == 1){
-      tempAdjList.add(new ArrayList<Integer>());
+    if (tempAdjList.size() == 2){
+      //tempAdjList.add(new ArrayList<Integer>());
+      usedIndices.add(0);
     }
 
     // normalize ints
@@ -419,8 +520,8 @@ public class Compound{
         tempAdjList.get(i).set(j, normalizedIndices.get(tempAdjList.get(i).get(j)));
       }
     }
-
-    tempAdjList.add(new ArrayList<>(Arrays.asList(normalizedStart)));
+    tempAdjList.add(new ArrayList<Integer>(Arrays.asList(normalizedStart)));
+    tempAdjList.add(usedIndices);
     
     
 
@@ -502,4 +603,9 @@ public class Compound{
     return counter;
   }
   
+  public int[] getNodeType(){
+    return nodeType;
+  }
+
 }
+

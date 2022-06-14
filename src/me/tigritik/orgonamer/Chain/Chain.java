@@ -70,9 +70,11 @@ public class Chain implements Comparable<Chain> {
     return "prefixes-" + Util.PREFIX[length] + "ane";
   }
 
+  
+
   public int compareTo(Chain b){
 
-
+    
     ArrayList<Integer> branchPointsThis = new ArrayList<Integer>(); // contains points in which it branches off
     ArrayList<Integer> branchPointsB = new ArrayList<Integer>();
     
@@ -89,41 +91,8 @@ public class Chain implements Comparable<Chain> {
         branchPointsB.add(i);
       }
     }
-    // System.out.println("BranchPointsThis: ");
-    // for (int branchNumber : branchPointsThis){
-    //   System.out.print(nodes[branchNumber] + " ");
-    // }
-    // System.out.println();
-    // System.out.println("BranchPointsB:");
-    // for (int branchNumber : branchPointsB){
-    //   System.out.print(nodes[(branchNumber)] + " ");
-    // }
-    // System.out.println();
-    // System.out.println("Parent Chain:");
-    // for (int x : nodes){
-    //   System.out.print(x + " ");
-    // }
-    // System.out.println("nodes: ");
-    // for (int x : nodes){
-    //   System.out.print(x + " ");
-    // }
-    // System.out.println();
-    // System.out.println("AdjList");
-    // for (List<Integer> A : parentCompound.getAdjList()){
-    //   for (int I : A){
-    //     System.out.print(I + " ");
-    //   }
-    //   System.out.println();
-    // }
-    // System.out.println("\n\n");
 
-    // System.out.println();
-  
-    // System.out.println("DONE");
-    
-    // if (parentCompound.getCounter() >= 7){
-    //   return 0;
-    // }
+
     int index = 0;
 
 
@@ -140,6 +109,7 @@ public class Chain implements Comparable<Chain> {
     }
 
 
+
     if (branchPointsThis.size() == branchPointsB.size()) { // branching points are identical
       index = 0;
       String branchThis = "", branchB = "";
@@ -147,21 +117,46 @@ public class Chain implements Comparable<Chain> {
         for (int next : parentCompound.getAdjList().get(nodes[branchPointsThis.get(index)])) {
           if (contains(nodes, next) == false) {
             List<List<Integer> > tempAdjList = parentCompound.createAdjList(next, nodes[branchPointsThis.get(index)]);
+
+            
+            List<Integer> usedIndices = tempAdjList.get(tempAdjList.size()-1);
+            tempAdjList.remove(tempAdjList.size()-1);
+            
+            int[] newNodeTypes = new int[tempAdjList.size()];
+
+
+            for (int newNode = 1; newNode < tempAdjList.size()-1; newNode++){
+              newNodeTypes[newNode] = parentCompound.getNodeType()[usedIndices.get(newNode-1)];
+            }
+
             int normalizedStart = tempAdjList.get(tempAdjList.size()-1).get(0);
             tempAdjList.remove(tempAdjList.size()-1);
-            Compound branchThisCompound = new Compound(normalizedStart, tempAdjList);
+
+            Compound branchThisCompound = new Compound(normalizedStart, tempAdjList, newNodeTypes);
             branchThis = branchThisCompound.getName(false);
           }
         }
         for (int next : b.getParentCompound().getAdjList().get(b.getNodes()[branchPointsB.get(index)])) {
           if (contains(nodes, next) == false) {
             List<List<Integer> > tempAdjList = b.getParentCompound().createAdjList(next, b.getNodes()[branchPointsB.get(index)]);
+            
+            List<Integer> usedIndices = tempAdjList.get(tempAdjList.size()-1);
+            tempAdjList.remove(tempAdjList.size()-1);
+          
+            int[] newNodeTypes = new int[tempAdjList.size()];
+            for (int newNode = 1; newNode < tempAdjList.size()-1; newNode++){
+              newNodeTypes[newNode] = b.getParentCompound().getNodeType()[usedIndices.get(newNode-1)];
+            }
+
             int normalizedStart = tempAdjList.get(tempAdjList.size()-1).get(0);
             tempAdjList.remove(tempAdjList.size()-1);
-            Compound branchBCompound = new Compound(normalizedStart, tempAdjList);
+
+
+            Compound branchBCompound = new Compound(normalizedStart, tempAdjList, newNodeTypes);
             branchB = branchBCompound.getName(false);
           }
         }
+
 
         // comparetobranch
         if (compareNames(branchThis, branchB) > 0) {
@@ -283,4 +278,5 @@ public int getChainLength() {
     return nodes;
   }
 
+ 
 }
