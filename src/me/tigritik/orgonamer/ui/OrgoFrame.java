@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,7 +178,7 @@ public class OrgoFrame extends JFrame {
     }
 
     private void generateOut() throws IOException {
-        BufferedWriter bf = new BufferedWriter(new FileWriter("Input.in"));
+        Writer bf = new BufferedWriter(new FileWriter("Input.in"));
         bf.write(nodeCount + "");
         for (Pair<Integer, Integer> connection : connectionList) {
             bf.write("\n" + (connection.getKey()+1) + " " + (connection.getValue()+1));
