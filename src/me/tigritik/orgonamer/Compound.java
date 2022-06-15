@@ -124,8 +124,6 @@ public class Compound{
             possibleParentChains.add(L);
 
           }
-        } catch (IOException e) {
-          e.printStackTrace();
         }
       }
 

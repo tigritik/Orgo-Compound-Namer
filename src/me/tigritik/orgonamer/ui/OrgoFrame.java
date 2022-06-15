@@ -19,14 +19,12 @@ public class OrgoFrame extends JFrame {
 
     private final List<Pair<Integer, Integer>> nodeCoordinateList = new ArrayList<>();
     private final List<Pair<Integer, Integer>> connectionList = new ArrayList<>();
-    private final ButtonGroup elementSelector = new ButtonGroup();
+    private final JPanel buttonPanel = new JPanel(new FlowLayout());
+    private final ElementButtons buttons = new ElementButtons(buttonPanel);
     private static final int RADIUS = 5;
 
     private int selectedNode = -1;
     private int nodeCount = 0;
-
-    private final JRadioButton carbon = new JRadioButton("Carbon");
-    private final JRadioButton bond1 = new JRadioButton("Single Bond");
 
     public OrgoFrame() {
         super("OrgoNamer");
@@ -39,13 +37,9 @@ public class OrgoFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(new ClickListener());
         addKeyListener(new KeyboardListener());
+        add(buttonPanel);
         setVisible(true);
         requestFocus();
-        elementSelector.add(carbon);
-        elementSelector.add(bond1);
-        add(carbon);
-        add(bond1);
-
     }
 
     private class ClickListener implements MouseInputListener {
@@ -63,10 +57,23 @@ public class OrgoFrame extends JFrame {
                     return;
                 }
                 if (selectedNode >= 0) {
+                    int nodeType = buttons.getSelectedGroup();
                     Pair<Integer, Integer> p = nodeCoordinateList.get(selectedNode);
                     getGraphics().drawLine(p.getKey(), p.getValue(), e.getX(), e.getY());
-                    drawNode(nodeCoordinateList.get(selectedNode));
                     connectionList.add(new Pair<>(selectedNode, nodeCoordinateList.size()));
+                    if (nodeType == 0) {
+                        drawNode(nodeCoordinateList.get(selectedNode));
+                    }
+                    else {
+                        Graphics g = getGraphics();
+                        g.setColor(Color.red);
+                        g.setFont(new Font("Times New Roman", Font.BOLD, 20));
+                        g.drawString(ElementButtons.SYMBOLS[nodeType-1], e.getX(), e.getY());
+                        buttons.addNode(nodeType, nodeCount);
+                        nodeCount++;
+                        deselectNode();
+                        return;
+                    }
                 }
                 nodeCoordinateList.add(new Pair<>(e.getX(), e.getY()));
                 selectedNode = nodeCoordinateList.size() - 1;
@@ -74,11 +81,7 @@ public class OrgoFrame extends JFrame {
                 nodeCount++;
             }
             if (e.getButton() == 3) {
-                if (selectedNode < 0) {
-                    return;
-                }
-                drawNode(nodeCoordinateList.get(selectedNode));
-                selectedNode = -1;
+                deselectNode();
             }
         }
 
@@ -161,6 +164,16 @@ public class OrgoFrame extends JFrame {
         Graphics g = getGraphics();
         g.setColor(Color.YELLOW);
         g.fillOval(node.getKey()-RADIUS, node.getValue()-RADIUS, 2*RADIUS, 2*RADIUS);
+        buttons.enableFunctionalGroups();
+    }
+
+    private void deselectNode() {
+        if (selectedNode < 0) {
+            return;
+        }
+        drawNode(nodeCoordinateList.get(selectedNode));
+        selectedNode = -1;
+        buttons.resetButtons();
     }
 
     private void generateOut() throws IOException {
@@ -169,6 +182,7 @@ public class OrgoFrame extends JFrame {
         for (Pair<Integer, Integer> connection : connectionList) {
             bf.write("\n" + (connection.getKey()+1) + " " + (connection.getValue()+1));
         }
+        bf.write("\n" + buttons.getFunctionalOutput());
         bf.close();
     }
 }

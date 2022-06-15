@@ -24,10 +24,10 @@ public class Main {
       System.out.println(name);
     }
     catch (IOException e) {
-      System.out.println("Missing input file input.in!");
+      System.err.println("Missing input file input.in!");
     }
     catch (Throwable e) {
-      System.out.println("An unknown error occurred!");
+      System.err.println("An unknown error occurred!");
     }
   }
 
