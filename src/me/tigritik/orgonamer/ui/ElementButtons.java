@@ -1,6 +1,7 @@
 package me.tigritik.orgonamer.ui;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -8,10 +9,9 @@ import java.util.List;
 
 public class ElementButtons {
 
-    public final static String[] SYMBOLS = {"F", "Cl", "Br", "I", "NO2", "N3"};
+    public final static String[] SYMBOLS = {"F", "Cl", "Br", "I", "NO2", "N3", "COOH", "CONH2", "CN", "COH", "O", "OH", "NH2"};
 
     private final JRadioButton[] buttonArray =
-
     {
         new JRadioButton("Carbon"),
         new JRadioButton("Fluorine"),
@@ -21,20 +21,45 @@ public class ElementButtons {
         new JRadioButton("NO2"),
         new JRadioButton("N3")
     };
+    private final JRadioButton[] higherGroupButtons =
+    {
+        new JRadioButton("Carboxylic Acid"),
+        new JRadioButton("Amide"),
+        new JRadioButton("Nitrile"),
+        new JRadioButton("Aldehyde"),
+        new JRadioButton("Ketone"),
+        new JRadioButton("Alcohol"),
+        new JRadioButton("Amine")
+    };
     private final ButtonGroup group = new ButtonGroup();
-    private final List<List<Integer>> nodeListArray = new ArrayList<>(7);
+    private final List<List<Integer>> nodeListArray = new ArrayList<>(14);
 
     private int selectedGroup = 0;
 
     public ElementButtons(JPanel panel) {
 
+        JPanel row1 = new JPanel(new FlowLayout());
+        row1.setMaximumSize(new Dimension(2000, 100));
+        JPanel row2 = new JPanel(new FlowLayout());
+
         for (AbstractButton b : buttonArray) {
             group.add(b);
             b.setFocusable(false);
             b.addActionListener(new ButtonSelectListener());
-            panel.add(b);
+            row1.add(b);
             nodeListArray.add(new ArrayList<>());
         }
+
+        for (AbstractButton b : higherGroupButtons) {
+            group.add(b);
+            b.setFocusable(false);
+            b.addActionListener(new ButtonSelectListener());
+            row2.add(b);
+            nodeListArray.add(new ArrayList<>());
+        }
+
+        panel.add(row1);
+        panel.add(row2);
 
         resetButtons();
     }
@@ -44,7 +69,6 @@ public class ElementButtons {
         @Override
         public void actionPerformed(ActionEvent e) {
             JRadioButton source = (JRadioButton) e.getSource();
-            System.out.println(source.getText());
             switch (source.getText()) {
                 case "Carbon":
                     selectedGroup = 0;
@@ -67,12 +91,37 @@ public class ElementButtons {
                 case "N3":
                     selectedGroup = 6;
                     break;
+                case "Carboxylic Acid":
+                    selectedGroup = 7;
+                    break;
+                case "Amide":
+                    selectedGroup = 8;
+                    break;
+                case "Nitrile":
+                    selectedGroup = 9;
+                    break;
+                case "Aldehyde":
+                    selectedGroup = 10;
+                    break;
+                case "Ketone":
+                    selectedGroup = 11;
+                    break;
+                case "Alcohol":
+                    selectedGroup = 12;
+                    break;
+                case "Amine":
+                    selectedGroup = 13;
+                    break;
             }
         }
     }
 
     public void resetButtons() {
         for (AbstractButton b : buttonArray) {
+            b.setSelected(false);
+            b.setEnabled(false);
+        }
+        for (AbstractButton b : higherGroupButtons) {
             b.setSelected(false);
             b.setEnabled(false);
         }
@@ -83,6 +132,9 @@ public class ElementButtons {
 
     public void enableFunctionalGroups() {
         for (AbstractButton b : buttonArray) {
+            b.setEnabled(true);
+        }
+        for (AbstractButton b : higherGroupButtons) {
             b.setEnabled(true);
         }
     }
@@ -97,7 +149,7 @@ public class ElementButtons {
 
     public String getFunctionalOutput() {
         StringBuilder out = new StringBuilder("FUNCTIONAL START");
-        for (int i = 1; i < 7; i++) {
+        for (int i = 1; i < 14; i++) {
             for (int node : nodeListArray.get(i)) {
                 out.append("\n").append(node+1).append(" ").append(SYMBOLS[i-1]);
             }

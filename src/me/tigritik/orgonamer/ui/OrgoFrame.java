@@ -19,7 +19,7 @@ public class OrgoFrame extends JFrame {
 
     private final List<Pair<Integer, Integer>> nodeCoordinateList = new ArrayList<>();
     private final List<Pair<Integer, Integer>> connectionList = new ArrayList<>();
-    private final JPanel buttonPanel = new JPanel(new FlowLayout());
+    private final JPanel buttonPanel = new JPanel();
     private final ElementButtons buttons = new ElementButtons(buttonPanel);
     private static final int RADIUS = 5;
 
@@ -37,6 +37,7 @@ public class OrgoFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(new ClickListener());
         addKeyListener(new KeyboardListener());
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
         add(buttonPanel);
         setVisible(true);
         requestFocus();
