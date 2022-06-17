@@ -1,11 +1,10 @@
 package me.tigritik.orgonamer.ui;
 
-import javafx.util.Pair;
-import me.tigritik.orgonamer.Main;
-
-import javax.swing.*;
-import javax.swing.event.MouseInputListener;
 import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -16,13 +15,23 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+import javax.swing.event.MouseInputListener;
+
+import javafx.util.Pair;
+import me.tigritik.orgonamer.Main;
+
 public class OrgoFrame extends JFrame {
 
     private final List<Pair<Integer, Integer>> nodeCoordinateList = new ArrayList<>();
     private final List<Pair<Integer, Integer>> connectionList = new ArrayList<>();
     private final JPanel buttonPanel = new JPanel();
     private final ElementButtons buttons = new ElementButtons(buttonPanel);
-    private static final int RADIUS = 5;
+    private static final int RADIUS = 10;
+
 
     private int selectedNode = -1;
     private int nodeCount = 0;
@@ -33,7 +42,7 @@ public class OrgoFrame extends JFrame {
     }
 
     private void setupFrame() {
-        setSize(1280, 720);
+        setSize(1920, 1000);
         //setIconImage();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(new ClickListener());
@@ -49,6 +58,7 @@ public class OrgoFrame extends JFrame {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == 1) {
+                int nodeType = buttons.getSelectedGroup();
                 int node = checkClick(e.getX(), e.getY());
                 if (node >= 0) {
                     selectNode(nodeCoordinateList.get(node));
@@ -61,21 +71,54 @@ public class OrgoFrame extends JFrame {
                 if (selectedNode >= 0) {
                     int nodeType = buttons.getSelectedGroup();
                     Pair<Integer, Integer> p = nodeCoordinateList.get(selectedNode);
-                    getGraphics().drawLine(p.getKey(), p.getValue(), e.getX(), e.getY());
-                    connectionList.add(new Pair<>(selectedNode, nodeCoordinateList.size()));
-                    if (nodeType == 0) {
-                        drawNode(nodeCoordinateList.get(selectedNode));
+
+                    if (nodeType == 15){
+                      Graphics g = getGraphics();
+                      Graphics2D g2d = (Graphics2D) g;
+                      g2d.setStroke(new BasicStroke(4.0F));
+                      g2d.drawLine(p.getKey(), p.getValue(), e.getX(), e.getY());
+                      connectionList.add(new Pair<>(selectedNode, nodeCount)); 
+                      connectionList.add(new Pair<>(selectedNode, nodeCount));
                     }
-                    else {
+                    else if (nodeType == 16){
+                      Graphics g = getGraphics();
+                      Graphics2D g2d = (Graphics2D) g;
+                      g2d.setStroke(new BasicStroke(10.0F));
+                      g2d.drawLine(p.getKey(), p.getValue(), e.getX(), e.getY());
+                      connectionList.add(new Pair<>(selectedNode, nodeCount)); 
+                      connectionList.add(new Pair<>(selectedNode, nodeCount)); 
+                      connectionList.add(new Pair<>(selectedNode, nodeCount)); 
+                    }
+                    else{
+                      getGraphics().drawLine(p.getKey(), p.getValue(), e.getX(), e.getY());
+                      connectionList.add(new Pair<>(selectedNode, nodeCount));
+                    }
+
+                    // System.out.println("selected node: " + selectedNode + " nnodeCoordianteListsize: " + nodeCount);
+                    if (nodeType == 0 || nodeType == 15 || nodeType == 16) {
+                      drawNode(nodeCoordinateList.get(selectedNode));
+                    }
+                    else if (nodeType <= 6){
+
                         Graphics g = getGraphics();
                         g.setColor(Color.red);
                         g.setFont(new Font("Times New Roman", Font.BOLD, 20));
                         g.drawString(ElementButtons.SYMBOLS[nodeType-1], e.getX(), e.getY());
+                        nodeCoordinateList.add(new Pair<>(e.getX(), e.getY()));
                         buttons.addNode(nodeType, nodeCount);
                         nodeCount++;
-                        deselectNode();
+                        //deselectNode();
                         return;
                     }
+                    else if (nodeType <= 14){
+                      Graphics g = getGraphics();
+                      g.setColor(Color.red);
+                      g.setFont(new Font("Times New Roman", Font.BOLD, 20));
+                      g.drawString(ElementButtons.SYMBOLS[nodeType-1], e.getX() + 10, e.getY() - 10);
+                      drawNode(nodeCoordinateList.get(selectedNode));
+                      buttons.addNode(nodeType, nodeCount);
+                    }
+
                 }
                 nodeCoordinateList.add(new Pair<>(e.getX(), e.getY()));
                 selectedNode = nodeCoordinateList.size() - 1;
@@ -129,21 +172,39 @@ public class OrgoFrame extends JFrame {
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 try {
-                    generateOut();
-                    Main.createMolecule();
-                    dispose();
+                  generateOut();
+                  String name = Main.createMolecule();
+                  Graphics g = getGraphics();      
+                  Font font = new Font("Times New Roman", Font.BOLD, 30);
+                  g.setFont(font);
+                  FontMetrics metrics = g.getFontMetrics(font);
+
+                  g.drawString("Name: " + name, 900 - metrics.stringWidth(name)/2, 850);
+
+                  // drawCenteredString(g, "Name: " + name);
+                  //dispose();
                 }
                 catch (IOException ex) {
                     System.out.println("Cannot save output file!");
                 }
             }
+            if (e.getKeyCode() == KeyEvent.VK_R){
+              dispose();
+              JFrame f = new OrgoFrame();
+
+
+            }
         }
+
+      
 
         @Override
         public void keyReleased(KeyEvent e) {
 
         }
     }
+
+
 
     private int checkClick(int x, int y) {
         int i = 0;

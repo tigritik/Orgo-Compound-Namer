@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ElementButtons {
 
-    public final static String[] SYMBOLS = {"F", "Cl", "Br", "I", "NO2", "N3", "COOH", "CONH2", "CN", "COH", "O", "OH", "NH2"};
+    public final static String[] SYMBOLS = {"F", "Cl", "Br", "I", "NO2", "N3", "COOH", "CONH2", "CN", "COH", "O", "OH", "NH2", "ETH"};
 
     private final JRadioButton[] buttonArray =
     {
@@ -29,10 +29,17 @@ public class ElementButtons {
         new JRadioButton("Aldehyde"),
         new JRadioButton("Ketone"),
         new JRadioButton("Alcohol"),
-        new JRadioButton("Amine")
+        new JRadioButton("Amine"),
+        new JRadioButton("Ether")
     };
+
+    private final JRadioButton[] multiBonds = {
+      new JRadioButton("Double Bond"),
+      new JRadioButton("Triple Bond")
+    };
+
     private final ButtonGroup group = new ButtonGroup();
-    private final List<List<Integer>> nodeListArray = new ArrayList<>(14);
+    private final List<List<Integer>> nodeListArray = new ArrayList<>(17);
 
     private int selectedGroup = 0;
 
@@ -41,6 +48,9 @@ public class ElementButtons {
         JPanel row1 = new JPanel(new FlowLayout());
         row1.setMaximumSize(new Dimension(2000, 100));
         JPanel row2 = new JPanel(new FlowLayout());
+        row2.setMaximumSize(new Dimension(2000, 200));
+        JPanel row3 = new JPanel(new FlowLayout());
+
 
         for (AbstractButton b : buttonArray) {
             group.add(b);
@@ -57,9 +67,18 @@ public class ElementButtons {
             row2.add(b);
             nodeListArray.add(new ArrayList<>());
         }
+        for (AbstractButton b : multiBonds){
+            group.add(b);
+            b.setFocusable(false);
+            b.addActionListener(new ButtonSelectListener());
+            row3.add(b);
+            nodeListArray.add(new ArrayList<>());
+        }
 
         panel.add(row1);
         panel.add(row2);
+        panel.add(row3);
+
 
         resetButtons();
     }
@@ -112,6 +131,16 @@ public class ElementButtons {
                 case "Amine":
                     selectedGroup = 13;
                     break;
+                case "Ether":
+                    selectedGroup = 14;
+                    break;
+                case "Double Bond":
+                    selectedGroup = 15;
+                    break;
+                case "Triple Bond":
+                    selectedGroup = 16;
+                    break;
+
             }
         }
     }
@@ -125,6 +154,11 @@ public class ElementButtons {
             b.setSelected(false);
             b.setEnabled(false);
         }
+        for (AbstractButton b : multiBonds){
+            b.setSelected(false);
+            b.setEnabled(false);
+        }
+
         buttonArray[0].setEnabled(true);
         buttonArray[0].setSelected(true);
         selectedGroup = 0;
@@ -137,6 +171,10 @@ public class ElementButtons {
         for (AbstractButton b : higherGroupButtons) {
             b.setEnabled(true);
         }
+        for (AbstractButton b: multiBonds){
+            b.setEnabled(true);
+        }
+
     }
 
     public int getSelectedGroup() {
@@ -149,7 +187,8 @@ public class ElementButtons {
 
     public String getFunctionalOutput() {
         StringBuilder out = new StringBuilder("FUNCTIONAL START");
-        for (int i = 1; i < 14; i++) {
+        for (int i = 1; i < 15; i++) {
+
             for (int node : nodeListArray.get(i)) {
                 out.append("\n").append(node+1).append(" ").append(SYMBOLS[i-1]);
             }

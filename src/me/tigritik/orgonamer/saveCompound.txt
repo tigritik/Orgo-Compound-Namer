@@ -12,9 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javafx.scene.ParentBuilder;
-
 import java.util.Queue;
 import java.util.StringTokenizer;
 
@@ -37,7 +34,7 @@ public class Compound {
   private int[] nodeType;
   private List<Integer> functionalNodeIndex;
   private int highestFunctionalNodeType;
-  private int[][] bondType;
+  // private int[][] bondType;
 
   // 0: carbon, 1: N3(azido), 2: Br(bromo), 3: Cl(Chloro), 4: F(fluoro), 5:
   // I(iodo), 6: NO2(nitro),
@@ -55,10 +52,9 @@ public class Compound {
     fillAdjacencyList();
   }
 
-  public Compound(int start, List<List<Integer>> tempAdjList, int[] nodeTypes, int[][] bondTypes) {
+  public Compound(int start, List<List<Integer>> tempAdjList, int[] nodeTypes) {
     headNode = start;
     N = tempAdjList.size() - 1;
-    bondType = bondTypes;
     adjList = tempAdjList;
     nodeType = nodeTypes;
     for (int x : nodeType) {
@@ -75,7 +71,7 @@ public class Compound {
 
     N = (Integer.parseInt(st.nextToken()));
     nodeType = new int[N + 1];
-    bondType = new int[N + 1][N + 1];
+    // bondType = new int[N + 1][N + 1];
     nodeList = (new Node[N + 1]);
 
     for (int i = 0; i < N + 1; i++) {
@@ -93,14 +89,13 @@ public class Compound {
       }
 
       int a = Integer.parseInt(temp1), b = Integer.parseInt(temp2);
-      if (bondType[a][b] == 0){
+      // if (bondType[a][b] == 0){
         adjList.get(a).add(b);
         adjList.get(b).add(a);
-      }
-
-      bondType[a][b]++;
-      bondType[b][a]++;
-
+      // }
+      
+      // bondType[a][b]++;
+      // bondType[b][a]++;
       // nodeList[a].addConnection(nodeList[b]);
       // nodeList[b].addConnection(nodeList[a]);
     }
@@ -112,16 +107,16 @@ public class Compound {
     typeToInt.put("F", 4);
     typeToInt.put("I", 5);
     typeToInt.put("NO2", 6);
-    typeToInt.put("ETH", 7);
-    typeToInt.put("NH2", 8);
-    typeToInt.put("S", 9);
-    typeToInt.put("OH", 10);
-    typeToInt.put("O", 11);
-    typeToInt.put("COH", 12);
-    typeToInt.put("CN", 13);
-    typeToInt.put("CONH2", 14);
+    typeToInt.put("Ether", 7);
+    typeToInt.put("Amine", 8);
+    typeToInt.put("Thiol", 9);
+    typeToInt.put("Alcohol", 10);
+    typeToInt.put("Ketone", 11);
+    typeToInt.put("Aldehyde", 12);
+    typeToInt.put("Nitrile", 13);
+    typeToInt.put("Amide", 14);
     typeToInt.put("Ester", 15);
-    typeToInt.put("COOH", 16);
+    typeToInt.put("Carboxylic", 16);
 
     while (bf.ready()) {
       StringTokenizer stNew = new StringTokenizer(bf.readLine());
@@ -136,14 +131,10 @@ public class Compound {
       // read in input
     }
 
-    //
   }
-
-  
 
   // returns a list of chains with size N (1<=N<=possibleParentChains.size())
   public ArrayList<Chain> getLongestChainIncludingFunctionals() {
-
 
     // Map<String, Integer> priorities = Map.ofEntries(
     // entry("Azido",1),
@@ -160,7 +151,14 @@ public class Compound {
     // create all possible chains of connections, return the chain that has the
     // indexWithHighestPriority in it, if there are multiple, compare and return
 
-  
+    // System.out.println("adjlist: ");
+    // for (int i = 1; i < adjList.size(); i++){
+    // System.out.print(i + ": ");
+    // List<Integer> temp = adjList.get(i);
+    // System.out.print(temp);
+    // System.out.println();
+    // }
+
     for (int i = 1; i < adjList.size(); i++) {
       for (int index : adjList.get(i)) {
         if (nodeType[index] == 0 && !(carbonsIndex.contains(index))) {
@@ -173,11 +171,9 @@ public class Compound {
     // if no functional groups with nodeType>6 are found, calls findLongestChain()
     // (default arg)
     // finds indexes of carbon and functionals
-
     if (functionalIndex.size() == 0) {
       return findLongestChain();
     }
-    
 
     // nodeType[index] ive never seen this syntax b4 no idea
     Collections.sort(functionalIndex, new Comparator<Integer>() {
@@ -203,15 +199,14 @@ public class Compound {
 
     List<Integer> leafIndices = new ArrayList<>();
     for (int i = 1; i <= N; i++) {
-
-      int counter = 0;
-      for (int x : adjList.get(i)) {
-        if (nodeType[x] == 0 || nodeType[x] > 7) {
-          counter++;
-        }
-      }
-      if (counter == 1 && (nodeType[i] == 0 || nodeType[i] > 7)) {
+      if (adjList.get(i).size() == 1) {
+        // if (nodeType[i] == 0 || nodeType[i] == 12 || nodeType[i] == 13 || nodeType[i]
+        // == 14 || nodeType[i] == 16){
         leafIndices.add(i);
+        // }
+        // else{
+        // leafIndices.add(adjList.get(i).get(0));
+        // }
       }
     }
 
@@ -239,8 +234,6 @@ public class Compound {
 
     ArrayList<Chain> paths = new ArrayList<>();
 
-    
-
     int[] parents = bfs(start, -1)[1];
 
     for (int leaf : leafIndices) {
@@ -254,11 +247,12 @@ public class Compound {
 
   public void findCorrectLongestParentChainIncludingFunctionalGroups(List<Chain> possibleParentChains) {
     Chain currentBest = possibleParentChains.get(0);
-    
+    // for(Chain c : possibleParentChains) {
+    // System.out.println(new Compound(c).getName());
+    // }
 
     for (int i = 1; i < possibleParentChains.size(); i++) {
 
-      
       if (currentBest.compareTo(possibleParentChains.get(i)) < 0) {
         currentBest = possibleParentChains.get(i);
       }
@@ -269,6 +263,65 @@ public class Compound {
     parentChainLength = finalParentChain.getChainLength();
 
   }
+
+  // public void findFinalDFS(List<Integer> leafIndices,
+  // List<Integer>indicesToInclude) {
+  // List<List<Integer>> storePossibleListIndices = new ArrayList<>();
+  // for(int i = 0; i<leafIndices.size(); i++) {
+  // storePossibleListIndices.add(dfsSubstep(leafIndices.get(i), new
+  // ArrayList<>(), leafIndices));
+  // }
+
+  // for(List<Integer> I : storePossibleListIndices) {
+  // int isValidCounter = 0;
+  // for(int i : indicesToInclude) {
+
+  // if(I.contains(i)) {
+  // isValidCounter++;
+  // }
+  // }
+
+  // if(isValidCounter==0) {
+  // storePossibleListIndices.remove(I);
+  // }
+  // }
+
+  // //found lists with indices we want
+
+  // //
+
+  // if(storePossibleListIndices.size()==0) {
+  // System.out.println("dfs may not have worked properly.");
+  // }
+
+  // }
+
+  // private List<Integer> dfsSubstep(int leafIndex, List<Integer> storeIndices,
+  // List<Integer> leafIndices) {
+  // leafIndices.remove(leafIndex);
+  // return dfs(leafIndex, leafIndex, storeIndexes, leafIndices);
+  // //leafIndex
+  // }
+
+  // private List<Integer> dfs(int leafIndex, int currIndex, List<Integer>
+  // storeIndices, List<Integer> leafIndices) {
+  // //base case
+  // //dfs -> ends in leaf
+  // //
+
+  // if(leafIndices.contains(currIndex)) {
+  // return storeIndices;
+  // }
+
+  // while(leafIndex==currIndex || getNumCarbonConnections(leafIndex)==2) {
+  // for(int i = 0; i <adjList.get(leafIndex).size(); i++) {
+
+  // }
+
+  // }
+
+  // //stores possible indexes visited (chain)
+  // }
 
   public int getNumCarbonConnections(int index) {
     int carbonCount = 0;
@@ -297,10 +350,9 @@ public class Compound {
 
     // finds leaf for (1)
     int firstLeaf = findFirstLeaf();
-
+    
 
     int[][] info = bfs(firstLeaf, -1);
-
 
     int maxLength = 0;
     ArrayList<Integer> furthestNodes = new ArrayList<>();
@@ -321,22 +373,23 @@ public class Compound {
       furthestNodes.add(headNode);
     }
 
- 
     // stores all possible start and end nodes
     ArrayList<Chain> possibleParentChains = new ArrayList<>();
 
     // runs a bfs from all ending nodes
     for (int start : furthestNodes) {
       info = bfs(start, -1); // info[0] stores distances, info[1] stores parents
-
       for (int i = 1; i < info[0].length; i++) {
-
         if (info[0][i] + 1 > parentChainLength) {
           possibleParentChains.clear();
           parentChainLength = info[0][i] + 1;
+          Chain L = new Chain((findPath(info[1], start, i)), this);
+          Chain L1 = new Chain((findReversePath(info[1], start, i)), this);
 
-       
-
+          // System.out.println(this.getAdjList());
+          possibleParentChains.add(L);
+          possibleParentChains.add(L1);
+        } else if (info[0][i] + 1 == parentChainLength) {
           Chain L = new Chain((findPath(info[1], start, i)), this);
           Chain L1 = new Chain((findReversePath(info[1], start, i)), this);
 
@@ -344,22 +397,9 @@ public class Compound {
           possibleParentChains.add(L);
           possibleParentChains.add(L1);
 
-        } 
-        else if (info[0][i] + 1 == parentChainLength) {
-          Chain L = new Chain((findPath(info[1], start, i)), this);
-          Chain L1 = new Chain((findReversePath(info[1], start, i)), this);
-
-          // System.out.println(this.getAdjList());
-          possibleParentChains.add(L);
-          possibleParentChains.add(L1);
         }
-
-
       }
-
     }
-
-
 
     return possibleParentChains;
 
@@ -382,7 +422,7 @@ public class Compound {
       // System.out.println("Queue done");
       for (int i = 0; i < adjList.get(curr).size(); i++) {
         int next = adjList.get(curr).get(i);
-        if (info[0][next] == 0 && next != start && next != parent && (nodeType[next] == 0 || nodeType[next] > 7)) { // next
+        if (info[0][next] == 0 && next != start && next != parent && (nodeType[next] == 0 || nodeType[next] > 6)) { // next
                                                                                                                     // node
                                                                                                                     // is
                                                                                                                     // not
@@ -401,8 +441,8 @@ public class Compound {
   public int findFirstLeaf() {
     for (int i = 1; i < adjList.size(); i++) {
       int counter = 0;
-      for (int x : adjList.get(i)) {
-        if (nodeType[x] == 0 || nodeType[x] > 6) {
+      for (int x : adjList.get(i)){
+        if (nodeType[x] == 0 || nodeType[x] > 6){
           counter++;
         }
       }
@@ -439,143 +479,128 @@ public class Compound {
   }
 
   // TODO
-  public String getName(Boolean isPartOfFinalParentChain) {
+  public String getName(Boolean isPartOfFinalParentChain ) {
     // System.out.println("nodeTypes:" );
-    // for (int x : nodeType){
-    // System.out.print(x + " ");
-    // }
-    // System.out.println();
     // for (int x : nodeType){
     //   System.out.print(x + " ");
     // }
     // System.out.println();
 
-    if (adjList.size() == 2) {
-      return Util.funcPrefix[nodeType[0]];
+    if (adjList.size() == 2){
+      
+      return Util.funcPrefix[nodeType[1]];
     }
 
+
     ArrayList<Chain> possibleParentChains = getLongestChainIncludingFunctionals();
+    
+    
 
-
-
-    // go thru final parent chain in order
-    // at branch points, store indices + call nameBranch
-    // Map < String, ArrayList<Int>>
+    //go thru final parent chain in order
+    //at branch points, store indices + call nameBranch
+    // Map < String, ArrayList<Int>> 
     // sort branch names by compareNameBranch
-    // combine evrything
+    //combine evrything
 
+    
     findCorrectLongestParentChainIncludingFunctionalGroups(possibleParentChains);
 
     // for (int x : finalParentChain.getNodes()){
-    // System.out.print(x + " ");
+    //   System.out.print(x + " ");
     // }
     // System.out.println();
-
-    if (nodeType[finalParentChain.getNodes()[finalParentChain.getNodes().length - 1]] > 6
-        && nodeType[finalParentChain.getNodes()[finalParentChain.getNodes().length - 1]] < highestFunctionalNodeType) {
+    
+    
+    if (nodeType[finalParentChain.getNodes()[finalParentChain.getNodes().length - 1]] > 6 && nodeType[finalParentChain.getNodes()[finalParentChain.getNodes().length - 1]] < highestFunctionalNodeType){
       ArrayList<Integer> tempParentChainNodes = new ArrayList<>();
-      for (int i = 1; i < finalParentChain.getNodes().length - 1; i++) {
+      for (int i = 1; i < finalParentChain.getNodes().length - 1; i++){
         tempParentChainNodes.add(finalParentChain.getNodes()[i]);
       }
       finalParentChain = new Chain(tempParentChainNodes, this);
     }
     parentChainLength = finalParentChain.getChainLength();
 
+
     // for (int x : finalParentChain.getNodes()){
-    // System.out.print(x + " ");
+    //   System.out.print(x + " ");
     // }
     // System.out.println(parentChainLength);
-
-    // System.out.print("final parent chain: ");
-    // for (int x : finalParentChain.getNodes()){
-    // System.out.print(x + " ");
-    // }
-    // System.out.println();
+    
+    System.out.print("final parent chain: ");
+    for (int x : finalParentChain.getNodes()){
+      System.out.print(x + " ");
+    }
+    System.out.println();
     // System.out.println("highest func node type: " + highestFunctionalNodeType);
     // System.out.println(N);
+
 
     String name = "";
     ArrayList<Integer> branchPoints = finalParentChain.returnBranchIndices();
 
-
-    // System.out.println("branchPOints: " + branchPoints);
-
-    // System.out.println("branchPoints: " + branchPoints);
-    Map<String, ArrayList<Integer>> branchNames = new HashMap<String, ArrayList<Integer>>();
+    System.out.println("branchPoints: " + branchPoints);
+    Map<String, ArrayList<Integer>> branchNames = new HashMap<String,ArrayList<Integer>>();
     // takes branch name to indicies it occurs at
 
+    
     List<Integer> highestFuncIndex = new ArrayList<>();
     String suffix = "";
-    if (highestFunctionalNodeType > 6) {
-
-      // System.out.println("reached");
+    if(highestFunctionalNodeType > 6) {
+      System.out.println("reached");
       suffix = Util.funcSuffix[highestFunctionalNodeType];
-
-      if (highestFunctionalNodeType == 7) {
-        name += indexOf(finalParentChain.getNodes(), branchPoints.get(0)) + "-";
-        if (nameEther().length() != 0){
-          String s = nameEther();
-          if (Character.isDigit(s.charAt(0))){
-            name += "(" + s + ")";
-          }
-          else{
-            name += s;        
-          }
-        }
-      }
-
+      
       // we odnt know if this is right
-      for (int i = 0; i < finalParentChain.getNodes().length; i++) {
+      for (int i = 0; i < finalParentChain.getNodes().length; i++){
         int x = finalParentChain.getNodes()[i];
-        if (nodeType[x] == highestFunctionalNodeType) {
+        if (nodeType[x] == highestFunctionalNodeType){
           highestFuncIndex.add(indexOf(finalParentChain.getNodes(), x)); // kinda sketchy but it works
-        } else if (nodeType[x] > 6) {
+        }
+        else if (nodeType[x] > 6){
           String prefix1 = Util.funcPrefix[nodeType[x]];
-          if (!branchNames.containsKey(prefix1)) {
+          if (!branchNames.containsKey(prefix1)){
             branchNames.put(prefix1, new ArrayList<Integer>());
           }
           branchNames.get(prefix1).add(indexOf(finalParentChain.getNodes(), x));
         }
       }
     }
+    
+    System.out.println("highestfuncnodetype: " + highestFunctionalNodeType);
+    
+    for (int i = 0; i < branchPoints.size(); i++){
 
-    // System.out.println("highestfuncnodetype: " + highestFunctionalNodeType);
+      for(int next : adjList.get(branchPoints.get(i))){
+        if (nodeType[next] != highestFunctionalNodeType || highestFunctionalNodeType <= 6){
+          if (contains(finalParentChain.getNodes(), next) == false){
 
-    for (int i = 0; i < branchPoints.size(); i++) {
-
-      for (int next : adjList.get(branchPoints.get(i))) {
-        if (nodeType[next] != highestFunctionalNodeType || highestFunctionalNodeType <= 6) {
-          if (contains(finalParentChain.getNodes(), next) == false) {
-
-            // List<List<Integer>> newAdjList = createAdjList(next, (int) branchPoints.get(i));
+            List<List<Integer>> newAdjList = createAdjList(next, (int)branchPoints.get(i));
+            List<Integer> usedIndices = newAdjList.get(newAdjList.size()-1);
+            newAdjList.remove(newAdjList.size()-1);
             
-
-
-
-            // List<Integer> usedIndices = newAdjList.get(newAdjList.size() - 1);
-            // newAdjList.remove(newAdjList.size() - 1);
-
-            // int[] newNodeTypes = new int[newAdjList.size()];
-            // // System.out.println("Used indices: ");
-            // // for (int x : usedIndices){
-            // // System.out.print(x + " ");
-            // // }
-            // // System.out.println();
-            // // System.out.println("newadjlistsize: " + newAdjList.size());
-
-            // for (int newNode = 1; newNode < newAdjList.size() - 1; newNode++) {
-            //   newNodeTypes[newNode] = nodeType[usedIndices.get(newNode - 1)];
+            
+            int[] newNodeTypes = new int[newAdjList.size()];
+            // System.out.println("Used indices: ");
+            // for (int x : usedIndices){
+            //   System.out.print(x + " ");
             // }
+            // System.out.println();
+            // System.out.println("newadjlistsize: " + newAdjList.size());
+            
+            for (int newNode = 1; newNode < newAdjList.size()-1; newNode++){
+              newNodeTypes[newNode] = nodeType[usedIndices.get(newNode-1)];
+            }
 
-            // int normalizedStart = newAdjList.get(newAdjList.size() - 1).get(0);
-            // newAdjList.remove(newAdjList.size() - 1);
+            int normalizedStart = newAdjList.get(newAdjList.size()-1).get(0);
+            newAdjList.remove(newAdjList.size()-1);
 
-            Compound fromBranch = createAdjList(next, (int) branchPoints.get(i));
+            
+            Compound fromBranch = new Compound(normalizedStart, newAdjList, newNodeTypes);  
+          
 
             String nameOfBranch = fromBranch.getName(false);
-
-            switch (nameOfBranch) {
-              case "1-methylethyl":
+    
+            switch (nameOfBranch){
+              case "1-methylethyl": 
                 nameOfBranch = "isopropyl";
                 break;
               case "1-methylpropyl":
@@ -588,8 +613,8 @@ public class Compound {
                 nameOfBranch = "tert-butyl";
                 break;
             }
-
-            if (!branchNames.containsKey(nameOfBranch)) {
+            
+            if (!branchNames.containsKey(nameOfBranch)){
               branchNames.put(nameOfBranch, new ArrayList<Integer>());
             }
             branchNames.get(nameOfBranch).add(indexOf(finalParentChain.getNodes(), branchPoints.get(i)));
@@ -600,164 +625,89 @@ public class Compound {
 
     // one branch name is (2,3-dimethyl)
     // one is (4-ethyl)
-
+  
     // 1-(2,3-dietyhlpropyl) - 5 -ethyloctane
 
     ArrayList<String> prefixSort = new ArrayList<>();
     for (Map.Entry<String, ArrayList<Integer>> entry : branchNames.entrySet()) {
       prefixSort.add(entry.getKey());
     }
-
-    if (highestFunctionalNodeType == 7 && prefixSort.size() != 0){
-      name += "-";
-    }
-
-
+    
     Collections.sort(prefixSort, (s1, s2) -> compareNames(s1, s2));
     int n = 0;
-    for (String s : prefixSort) {
-      for (int i = 0; i < branchNames.get(s).size(); i++) {
-
-        if (i == branchNames.get(s).size() - 1) {
+    for (String s : prefixSort){
+      for (int i  = 0; i < branchNames.get(s).size(); i++){
+        
+        if (i == branchNames.get(s).size() -1){
           name += branchNames.get(s).get(i) + "-" + Util.NUMERICPREFIX[branchNames.get(s).size()];
-          if (Character.isDigit(s.charAt(0))) {
+          if (Character.isDigit(s.charAt(0))){
             name += "(" + s + ")";
-          } else {
+          }
+          else{
             name += s;
           }
-          if (n != branchNames.entrySet().size() - 1) {
+          if (n != branchNames.entrySet().size()-1){
             name += "-";
           }
-        } else {
+        }
+        else{
           name += branchNames.get(s).get(i) + ",";
         }
       }
       n++;
     }
 
-    List<Integer> multiBondIndices = finalParentChain.getMultiBondIndices();
-    List<Integer> DBondIndices = finalParentChain.getDBondIndices();
-    List<Integer> TBondIndices = finalParentChain.getTBondIndices();
 
-    // System.out.println(multiBondIndices.size());
-
-    if (multiBondIndices.size() == 0){
-      if (isPartOfFinalParentChain == true) {
-        // System.out.println("parentchainLenght: " + parentChainLength);
-        // System.out.println(Util.PREFIX[parentChainLength]);
-        name += Util.PREFIX[parentChainLength] + "ane";
-      } else {
-        name += Util.PREFIX[parentChainLength] + "yl";
-
-      }
-    }
+    if (isPartOfFinalParentChain == true){
+      // System.out.println("parentchainLenght: " + parentChainLength);
+      // System.out.println(Util.PREFIX[parentChainLength]);
+      name += Util.PREFIX[parentChainLength] + "ane";
+    }    
     else{
-      if (isPartOfFinalParentChain){ 
-        // add double bond indiices
-        if (DBondIndices.size() > 0){
-          if (name.equals("") == false){
-            name += "-";
-          }
-          for (int i = 0; i < DBondIndices.size(); i++){
-            name += DBondIndices.get(i);
-            name += ",";
-          }
-          name = name.substring(0, name.length()-1);
-          name += "-" + Util.PREFIX[parentChainLength] + Util.NUMERICPREFIX[DBondIndices.size()]+  "ene";
-        }
-        
+      name += Util.PREFIX[parentChainLength] + "yl";
 
-        if (TBondIndices.size() > 0){
-          if (DBondIndices.size() > 0){
-            name = name.substring(0, name.length() - 3 - Util.NUMERICPREFIX[DBondIndices.size()].length());
-            name += "en";
-          }
-          name += "-";
-          for (int i = 0; i < TBondIndices.size(); i++){
-            name += TBondIndices.get(i);
-            name += ",";
-          }
-          name = name.substring(0, name.length()-1);
-          if (DBondIndices.size() == 0){
-            name += "-" + Util.PREFIX[parentChainLength] + Util.NUMERICPREFIX[TBondIndices.size()]+ "yne";
-          }
-          else{
-            name += "-" + Util.NUMERICPREFIX[TBondIndices.size()]+ "yne";
-          }
-        }
-      }
-      else{
-        if (DBondIndices.size() > 0){
-          name += "-";
-        }
-        for (int i = 0; i < DBondIndices.size(); i++){
-          name += finalParentChain.getNodes()[DBondIndices.get(i)];
-          name += ",";
-        }
-        name += Util.PREFIX[DBondIndices.size()] + "enyl";
-
-        if (TBondIndices.size() > 0){
-          if (DBondIndices.size() > 0){
-            name = name.substring(0, name.length() -1);
-          }
-          name += "-";
-        }
-        for (int i = 0; i < TBondIndices.size(); i++){
-          name += finalParentChain.getNodes()[TBondIndices.get(i)];
-          name += ",";
-        }
-        name += Util.PREFIX[TBondIndices.size()] + "ynyl";
-      }
     }
-    /*
-     * System.out.println(name);
-     * String masterBondEdit;
-     * //masterBondEdit, String that stores the indices and name of the bonds that
-     * //may be present. For example, "1,2 - diene-3-yne"
-     * List<Integer> multibondList = finalParentChain.getMultiBondIndices();
-     * List<Integer> doubleBondList = new ArrayList<>();
-     * List<Integer> tripleBondList = new ArrayList<>();
-     * if(multibondList.size()>0) {
-     * for(int x : MultiBondList) {
-     * if(doubleOrTriple[x]==2) {
-     * doubleBondList.add(x);
-     * } else {
-     * tripleBondList.add(x);
-     * }
-     * 
-     * }
-     * }
-     * 
-     * for(int i = 0; i<doubleBondList.size)
-     * 
-     */
+    
+    // System.out.println(name);
 
-    if (highestFunctionalNodeType > 7) {
-      // pentane
-      // pentan + dioic acid
-      Collections.sort(highestFuncIndex);
+    // String masterBondEdit;
+    // //masterBondEdit, String that stores the indices and name of the bonds that may be present. For example, "1,2 - diene-3-yne"
+    // List<Integer> multibondList = finalParentChain.getMultiBondIndices();
+    // if(multibondList.size()>0) {
+    //   for(int x : MultiBondList) { 
+    //     if(bondType[x][x+1] || bondType[x][x-1])
+      
+            
+    //   }
+    // }
+      
+    
+    
+    
+    
+    if (highestFunctionalNodeType > 6){
+      //pentane
+      //pentan + dioic acid
+      Collections.sort(highestFuncIndex); 
       // ane -> an
-      if (highestFunctionalNodeType != 13){
-        name = name.substring(0, name.length() - 1);
-      }
+      name = name.substring(0,name.length()-1);
 
-      if (!(highestFuncIndex.size() == 1
-          && (highestFunctionalNodeType == 16 || highestFunctionalNodeType == 14 || highestFunctionalNodeType == 13))) {
+      if (!(highestFuncIndex.size() == 1 && (highestFunctionalNodeType == 16 || highestFunctionalNodeType == 14 || highestFunctionalNodeType == 13))){
         name += "-";
-        for (int i = 0; i < highestFuncIndex.size(); i++) {
+        for(int i = 0; i < highestFuncIndex.size(); i++) {
           if (i != highestFuncIndex.size() - 1) {
             name += highestFuncIndex.get(i) + ",";
-          } else {
+          }
+          else{
             name += highestFuncIndex.get(i) + "-";
           }
         }
       }
       name += Util.NUMERICPREFIX[highestFuncIndex.size()] + suffix;
-
     }
-    // we have to put the double bond edit before the functionals hexenoic acid for
-    // example
+    //we have to put the double bond edit before the functionals hexenoic acid for example
     //
+    
 
     this.name = name;
     return name;
@@ -795,7 +745,7 @@ public class Compound {
   // 2,3 - di ethylprop
   // eth
 
-  public Compound createAdjList(int start, int parent) {
+  public List<List<Integer>> createAdjList(int start, int parent) {
     List<List<Integer>> tempAdjList = new ArrayList<List<Integer>>();
     ArrayList<Integer> usedIndices = new ArrayList<>();
 
@@ -823,20 +773,10 @@ public class Compound {
         usedIndices.add(i);
       }
     }
-    
-    int[] newNodeTypes = new int[tempAdjList.size()];
-    int[][] newBondTypes = new int[tempAdjList.size()][tempAdjList.size()];
-
-    for (int i = 0; i < usedIndices.size(); i++){
-      newNodeTypes[i] = nodeType[usedIndices.get(i)];
+    if (tempAdjList.size() == 2) {
+      // tempAdjList.add(new ArrayList<Integer>());
+      // usedIndices.add(0);
     }
-
-    for (int i = 0; i < usedIndices.size(); i++){
-      for (int j = 0; j < usedIndices.size(); j++){
-        newBondTypes[i][j] = bondType[usedIndices.get(i)][usedIndices.get(j)];
-      }
-    }
-
 
     // normalize ints
     Collections.sort(usedIndices);
@@ -858,9 +798,10 @@ public class Compound {
         tempAdjList.get(i).set(j, normalizedIndices.get(tempAdjList.get(i).get(j)));
       }
     }
-    
+    tempAdjList.add(new ArrayList<Integer>(Arrays.asList(normalizedStart)));
+    tempAdjList.add(usedIndices);
 
-    return new Compound(normalizedStart, tempAdjList, newNodeTypes, newBondTypes);
+    return tempAdjList;
   }
 
   public int[][] bfsForAdjList(int start, int parent) {
@@ -889,62 +830,6 @@ public class Compound {
     }
 
     return info;
-  }
-
-  public String nameEther(){
-    int etherIndex = 0;
-    for (int i = 1; i < nodeType.length; i++){
-      if (nodeType[i] == 7){
-        etherIndex = i;
-      }
-    }
-    
-    int parentChainAdjacentNode = 0;
-    for (int next : adjList.get(etherIndex)){
-      if (contains(finalParentChain.getNodes(), next)){
-        parentChainAdjacentNode = next;
-      }
-    }
-
-    String nameOfBranch = ""; 
-
-    for (int next : adjList.get(etherIndex)){
-      if (next != parentChainAdjacentNode){
-        // List<List<Integer>> newAdjList = createAdjList(next, etherIndex);
-        // List<Integer> usedIndices = newAdjList.get(newAdjList.size() - 1);
-        // newAdjList.remove(newAdjList.size() - 1);
-
-        
-
-        // int normalizedStart = newAdjList.get(newAdjList.size() - 1).get(0);
-        // newAdjList.remove(newAdjList.size() - 1);
-
-        Compound fromBranch = createAdjList(next, etherIndex);
-        nameOfBranch = fromBranch.getName(false);
-
-        switch (nameOfBranch) {
-          case "1-methylethyl":
-            nameOfBranch = "isopropyl";
-            break;
-          case "1-methylpropyl":
-            nameOfBranch = "sec-butyl";
-            break;
-          case "2-methylpropyl":
-            nameOfBranch = "isobutyl";
-            break;
-          case "1,1-dimethylethyl":
-            nameOfBranch = "tert-butyl";
-            break;
-        }
-
-        nameOfBranch = nameOfBranch.substring(0, nameOfBranch.length()-2) + "oxy";
-      }
-    }
-    
-    return nameOfBranch;
-
-    
-    
   }
 
   public int getConnections(FunctionalNode n) {
@@ -1022,9 +907,9 @@ public class Compound {
   public int[] getNodeType() {
     return nodeType;
   }
-
-  public int[][] getBondType(){
-  return bondType;
-  }
+  
+  // public int[][] getBondType(){
+  //   return bondType;
+  // }
 
 }
