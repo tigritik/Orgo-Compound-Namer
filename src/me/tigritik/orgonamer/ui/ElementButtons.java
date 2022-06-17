@@ -79,6 +79,7 @@ public class ElementButtons {
         panel.add(row2);
         panel.add(row3);
 
+
         resetButtons();
     }
 
@@ -139,6 +140,7 @@ public class ElementButtons {
                 case "Triple Bond":
                     selectedGroup = 16;
                     break;
+
             }
         }
     }
@@ -156,6 +158,7 @@ public class ElementButtons {
             b.setSelected(false);
             b.setEnabled(false);
         }
+
         buttonArray[0].setEnabled(true);
         buttonArray[0].setSelected(true);
         selectedGroup = 0;
@@ -171,6 +174,7 @@ public class ElementButtons {
         for (AbstractButton b: multiBonds){
             b.setEnabled(true);
         }
+
     }
 
     public int getSelectedGroup() {
@@ -184,6 +188,7 @@ public class ElementButtons {
     public String getFunctionalOutput() {
         StringBuilder out = new StringBuilder("FUNCTIONAL START");
         for (int i = 1; i < 15; i++) {
+
             for (int node : nodeListArray.get(i)) {
                 out.append("\n").append(node+1).append(" ").append(SYMBOLS[i-1]);
             }

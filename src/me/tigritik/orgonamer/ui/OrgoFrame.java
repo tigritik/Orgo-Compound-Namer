@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class OrgoFrame extends JFrame {
     private final JPanel buttonPanel = new JPanel();
     private final ElementButtons buttons = new ElementButtons(buttonPanel);
     private static final int RADIUS = 10;
+
 
     private int selectedNode = -1;
     private int nodeCount = 0;
@@ -67,6 +69,7 @@ public class OrgoFrame extends JFrame {
                     return;
                 }
                 if (selectedNode >= 0) {
+                    int nodeType = buttons.getSelectedGroup();
                     Pair<Integer, Integer> p = nodeCoordinateList.get(selectedNode);
 
                     if (nodeType == 15){
@@ -96,6 +99,7 @@ public class OrgoFrame extends JFrame {
                       drawNode(nodeCoordinateList.get(selectedNode));
                     }
                     else if (nodeType <= 6){
+
                         Graphics g = getGraphics();
                         g.setColor(Color.red);
                         g.setFont(new Font("Times New Roman", Font.BOLD, 20));
@@ -114,6 +118,7 @@ public class OrgoFrame extends JFrame {
                       drawNode(nodeCoordinateList.get(selectedNode));
                       buttons.addNode(nodeType, nodeCount);
                     }
+
                 }
                 nodeCoordinateList.add(new Pair<>(e.getX(), e.getY()));
                 selectedNode = nodeCoordinateList.size() - 1;
@@ -235,7 +240,7 @@ public class OrgoFrame extends JFrame {
     }
 
     private void generateOut() throws IOException {
-        BufferedWriter bf = new BufferedWriter(new FileWriter("Input.in"));
+        Writer bf = new BufferedWriter(new FileWriter("Input.in"));
         bf.write(nodeCount + "");
         for (Pair<Integer, Integer> connection : connectionList) {
             bf.write("\n" + (connection.getKey()+1) + " " + (connection.getValue()+1));
