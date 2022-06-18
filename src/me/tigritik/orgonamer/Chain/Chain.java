@@ -1,4 +1,4 @@
-package me.tigritik.orgonamer.chain;
+package me.tigritik.orgonamer.Chain;
 
 import java.util.ArrayList;
 import java.util.Arrays;

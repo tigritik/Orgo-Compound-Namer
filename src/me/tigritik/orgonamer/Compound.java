@@ -11,14 +11,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import javafx.scene.ParentBuilder;
-
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-import me.tigritik.orgonamer.chain.Chain;
+import me.tigritik.orgonamer.Chain.Chain;
 import me.tigritik.orgonamer.nodes.FunctionalNode;
 import me.tigritik.orgonamer.nodes.Node;
 
@@ -51,8 +47,8 @@ public class Compound {
   // 4
   // 5 br
 
-  public Compound() throws IOException {
-    fillAdjacencyList();
+  public Compound(String fileName) throws IOException {
+    fillAdjacencyList(fileName);
   }
 
   public Compound(int start, List<List<Integer>> tempAdjList, int[] nodeTypes, int[][] bondTypes) {
@@ -68,8 +64,8 @@ public class Compound {
 
   }
 
-  public void fillAdjacencyList() throws IOException {
-    Input input = new Input("Input.in");
+  public void fillAdjacencyList(String fileName) throws IOException {
+    Input input = new Input(fileName);
     StringTokenizer st = input.getStringTokenizer();
     BufferedReader bf = input.getBufferedReader();
 
