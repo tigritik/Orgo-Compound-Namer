@@ -303,6 +303,22 @@ public class Chain implements Comparable<Chain> {
 
             Compound branchThisCompound = parentCompound.createAdjList(next, nodes[branchPointsThis.get(index)]);
             branchThis = branchThisCompound.getName(false);
+
+            switch (branchThis) {
+              case "1-methylethyl":
+                branchThis = "isopropyl";
+                break;
+              case "1-methylpropyl":
+                branchThis = "sec-butyl";
+                break;
+              case "2-methylpropyl":
+                branchThis = "isobutyl";
+                break;
+              case "1,1-dimethylethyl":
+                branchThis = "tert-butyl";
+                break;
+            }
+
             branchThisNames.add(branchThis);
           }
         }
@@ -326,12 +342,28 @@ public class Chain implements Comparable<Chain> {
             Compound branchBCompound =  b.getParentCompound().createAdjList(next, b.getNodes()[branchPointsB.get(index)]);
             branchB = branchBCompound.getName(false);
 
+            switch (branchB) {
+              case "1-methylethyl":
+                branchB = "isopropyl";
+                break;
+              case "1-methylpropyl":
+                branchB = "sec-butyl";
+                break;
+              case "2-methylpropyl":
+                branchB = "isobutyl";
+                break;
+              case "1,1-dimethylethyl":
+                branchB = "tert-butyl";
+                break;
+            }
+
             branchBNames.add(branchB);
           }
         }
 
         Collections.sort(branchThisNames);
         Collections.sort(branchBNames);
+
 
         // System.out.println("branchpointsthis: " + branchPointsThis.get(index) + " branchPointsB" + branchPointsB.get(index));
         // System.out.println("branchThisNames: " + branchThisNames);
