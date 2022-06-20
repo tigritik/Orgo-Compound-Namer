@@ -1,0 +1,44 @@
+Case 0: WS1, 2A 
+
+//only carbons 
+
+Case 1: WS1, 2D 
+
+//only carbons
+
+Case 2: WS2, 1A
+
+Case 3: WS2, 1C
+
+Case 4: WS2, 1D
+Case 5: WS2, 1F
+
+Case 6: WS2, 1H
+
+//FUNCTIONAL GROUPS TEST
+
+Case 7: WS3, 2A
+
+Case 8: WS3, 2B
+
+Case 9: WS3, 2C
+
+Case 10: WS3, 2D
+
+Case 11: WS3, 2E
+
+Case 12: WS3, 2I
+
+Case 13: WS3, 2K
+
+Case 14: WS3, 3A
+
+Case 15: See *methanal
+
+Case 16: See *ethanal
+
+Case 17: Carboxylic acid, 5 carbons, each carbon connected to a ketone
+
+Case 18: See *citric acid, except all carbon branches from middle carbon have the same length
+
+Case 19: Single carbon

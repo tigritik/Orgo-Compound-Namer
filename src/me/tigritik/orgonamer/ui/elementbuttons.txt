@@ -10,9 +10,9 @@ import java.util.List;
 
 public class ElementButtons {
 
-    public final static String[] SYMBOLS = {"O", "N", "F", "Cl", "Br", "I", "NO2", "N3"};
+    public final static String[] SYMBOLS = {"O", "N", "F", "Cl", "Br", "I", "NO2", "N3", "COOH", "CONH2", "CN", "COH", "O(Ketone)", "OH", "NH2", "ETH"};
     public static String[] groupNames = {"Carbon", "Oxygen", "Nitrogen", "Fluorine", "Chlorine", "Bromine", "Iodine", "NO2", "N3",
-       "Double Bond C", "Triple Bond C", "Double Bond O", "Triple Bond N", "H"};
+      "Carboxylic Acid", "Amide", "Nitrile", "Aldehyde", "Ketone", "Alcohol", "Amine", "Ether", "Double Bond", "Triple Bond"};
 
     private final JRadioButton[] buttonArray =
     {
@@ -24,18 +24,27 @@ public class ElementButtons {
         new JRadioButton("Bromine"),
         new JRadioButton("Iodine"),
         new JRadioButton("NO2"),
-        new JRadioButton("N3"),
-        new JRadioButton("H")
+        new JRadioButton("N3")
     };
+    private final JRadioButton[] higherGroupButtons =
+    {
+        new JRadioButton("Carboxylic Acid"),
+        new JRadioButton("Amide"),
+        new JRadioButton("Nitrile"),
+        new JRadioButton("Aldehyde"),
+        new JRadioButton("Ketone"),
+        new JRadioButton("Alcohol"),
+        new JRadioButton("Amine"),
+        new JRadioButton("Ether")
+    };
+
     private final JRadioButton[] multiBonds = {
-      new JRadioButton("Double Bond C"),
-      new JRadioButton("Triple Bond C"), 
-      new JRadioButton("Double Bond O"), 
-      new JRadioButton("Triple Bond N")
+      new JRadioButton("Double Bond"),
+      new JRadioButton("Triple Bond")
     };
 
     private final ButtonGroup group = new ButtonGroup();
-    private final List<List<Integer>> nodeListArray = new ArrayList<>(13);
+    private final List<List<Integer>> nodeListArray = new ArrayList<>(19);
 
     private int selectedGroup = 0;
 
@@ -44,6 +53,8 @@ public class ElementButtons {
         JPanel row1 = new JPanel(new FlowLayout());
         row1.setMaximumSize(new Dimension(2000, 100));
         JPanel row2 = new JPanel(new FlowLayout());
+        row2.setMaximumSize(new Dimension(2000, 200));
+        JPanel row3 = new JPanel(new FlowLayout());
 
 
         for (AbstractButton b : buttonArray) {
@@ -53,16 +64,26 @@ public class ElementButtons {
             row1.add(b);
             nodeListArray.add(new ArrayList<>());
         }
-        for (AbstractButton b : multiBonds){
+
+        for (AbstractButton b : higherGroupButtons) {
             group.add(b);
             b.setFocusable(false);
             b.addActionListener(new ButtonSelectListener());
             row2.add(b);
             nodeListArray.add(new ArrayList<>());
         }
+        for (AbstractButton b : multiBonds){
+            group.add(b);
+            b.setFocusable(false);
+            b.addActionListener(new ButtonSelectListener());
+            row3.add(b);
+            nodeListArray.add(new ArrayList<>());
+        }
 
         panel.add(row1);
         panel.add(row2);
+        panel.add(row3);
+
 
         resetButtons();
     }
@@ -82,6 +103,10 @@ public class ElementButtons {
             b.setSelected(false);
             b.setEnabled(false);
         }
+        for (AbstractButton b : higherGroupButtons) {
+            b.setSelected(false);
+            b.setEnabled(false);
+        }
         for (AbstractButton b : multiBonds){
             b.setSelected(false);
             b.setEnabled(false);
@@ -96,7 +121,9 @@ public class ElementButtons {
         for (AbstractButton b : buttonArray) {
             b.setEnabled(true);
         }
-
+        for (AbstractButton b : higherGroupButtons) {
+            b.setEnabled(true);
+        }
         for (AbstractButton b: multiBonds){
             b.setEnabled(true);
         }
@@ -113,7 +140,7 @@ public class ElementButtons {
 
     public String getFunctionalOutput() {
         StringBuilder out = new StringBuilder("FUNCTIONAL START");
-        for (int i = 1; i < 9; i++) {
+        for (int i = 1; i < 17; i++) {
 
             for (int node : nodeListArray.get(i)) {
                 out.append("\n").append(node+1).append(" ").append(SYMBOLS[i-1]);

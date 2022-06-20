@@ -1,0 +1,22 @@
+WS1, 2A 
+WS1, 2D 
+WS2, 1A
+WS2, 1C
+WS2, 1D
+WS2, 1F
+WS2, 1H
+WS3, 2A
+WS3, 2B
+WS3, 2C
+WS3, 2D
+WS3, 2E
+WS3, 2I
+WS3, 2K
+WS3, 3A
+See *ethanal
+See *methanal
+Carboxylic acid, 5 carbons, each carbon connected to a ketone
+See *citric acid, except all carbon branches from middle carbon have the same length
+Single carbon
+Same as 17, carboxylic acid at end
+stuff
