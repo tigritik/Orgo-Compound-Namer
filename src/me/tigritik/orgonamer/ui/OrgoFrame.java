@@ -1,11 +1,10 @@
 package me.tigritik.orgonamer.ui;
 
-import java.awt.BasicStroke;
+import java.awt.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -241,7 +240,7 @@ public class OrgoFrame extends JFrame {
     }
 
     private void generateOut() throws IOException {
-        Writer bf = new BufferedWriter(new FileWriter("Inputs/Inputmain.in"));
+        Writer bf = new BufferedWriter(new FileWriter("Input.in"));
         bf.write(nodeCount + "");
         for (Pair<Integer, Integer> connection : connectionList) {
             bf.write("\n" + (connection.getKey()+1) + " " + (connection.getValue()+1));
