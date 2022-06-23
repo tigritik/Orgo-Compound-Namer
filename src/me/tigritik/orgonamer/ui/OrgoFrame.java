@@ -241,7 +241,7 @@ public class OrgoFrame extends JFrame {
     }
 
     private void generateOut() throws IOException {
-        Writer bf = new BufferedWriter(new FileWriter("Input.in"));
+        Writer bf = new BufferedWriter(new FileWriter("Inputs/Inputmain.in"));
         bf.write(nodeCount + "");
         for (Pair<Integer, Integer> connection : connectionList) {
             bf.write("\n" + (connection.getKey()+1) + " " + (connection.getValue()+1));
